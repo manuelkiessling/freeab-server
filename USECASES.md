@@ -198,6 +198,8 @@ react to this, either in your frontend, your backend, or both.
 
 For example, in your PHP request controller you could do this to route your user according to an experiment:
 
+    <?php
+
     $abtestUserId = $_COOKIE['abtest_userid']; // or wherever you decided to store the FreeAB user ID
 
     if ($abtestUserId === null) { // User is not yet managed by AB test system
@@ -218,6 +220,8 @@ For example, in your PHP request controller you could do this to route your user
         $response->redirect("/step2.php");
       }
     }
+
+    ?>
 
 
 Or, in your JavaScript frontend, you could do this:
