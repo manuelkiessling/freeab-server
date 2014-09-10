@@ -156,19 +156,13 @@ request decisionsets.
       "status": "success",
       "decisionsets": {
         "Checkout page buttons": {
-            "variation": "Group A",
-            "params": {
-              "button-color": "#ff99ee",
-              "show-note": false,
-              "increase-price-by": 4.00
-          }
+          "button-color": "#ff99ee",
+          "show-note": false,
+          "increase-price-by": 4.00
         },
         "Homepage teaser": {
-            "variation": "Group C",
-            "params": {
-              "teaser-id": 5,
-              "skip-second-step": true
-          }
+          "teaser-id": 5,
+          "skip-second-step": true
         }
       }
     }
