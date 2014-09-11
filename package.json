@@ -1,0 +1,30 @@
+{
+  "name": "freeab-server",
+  "version": "0.0.1",
+  "description": "FreeAB Backend Server",
+  "readme": "README.md",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^0.9.0",
+    "db-migrate": "^0.7.1",
+    "node-dbi": "^0.7.1",
+    "percolator": "^1.5.0"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5",
+    "request": "^2.42.0",
+    "sqlite3": "^2.2.7"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/jasmine-node tests/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/manuelkiessling/freeab-server.git"
+  },
+  "author": {
+    "name": "Manuel Kiessling",
+    "email": "manuel@kiessling.net"
+  },
+  "license": "MIT"
+}
