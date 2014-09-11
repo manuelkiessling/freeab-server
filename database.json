@@ -1,0 +1,17 @@
+{
+  "dev": {
+    "driver": "sqlite3",
+    "filename": "/var/tmp/freeab-server.dev.db"
+  },
+
+  "test": {
+    "driver": "sqlite3",
+    "filename": "/var/tmp/freeab-server.test.db"
+  },
+
+  "prod": {
+    "driver": "mysql",
+    "user": "root",
+    "password": "root"
+  }
+}
