@@ -1,6 +1,5 @@
 'use strict';
 
-var DBWrapper = require('node-dbi').DBWrapper;
 var dbWrapper = require('./database');
 var backend = require('./backend');
 
