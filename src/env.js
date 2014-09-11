@@ -10,4 +10,11 @@ if (process.env.FREEAB_ENV) {
   env = 'test';
 }
 
+if (! (   env === 'test'
+       || env === 'dev'
+       || env === 'staging'
+       || env === 'production')) {
+  throw new Error('"' + env + '" is not an allowed environment');
+}
+
 module.exports = env;

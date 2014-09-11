@@ -1,7 +1,6 @@
 'use strict';
 
-var env = process.env.FREEAB_ENV || 'test';
-
+var resetDatabase = require('../resetDatabase');
 var dbWrapper = require('../../src/database');
 var backend = require('../../src/backend');
 var async = require('async');
@@ -12,24 +11,11 @@ var server = backend.init(dbWrapper, 8888);
 describe('The experiments API', function() {
 
   beforeEach(function(done) {
-
-    async.series([
-      function(callback) {
-        dbWrapper.remove('experiment', '1', function(err) {
-          callback(err, null);
-        });
-      },
-      function(callback) {
-        dbWrapper.remove('sqlite_sequence', '1', function(err) {
-          callback(err, null);
-        });
-      }
-    ], function(err, results) {
+    resetDatabase(function() {
       server.listen(function(err) {
         done(err);
       });
     });
-
   });
 
   afterEach(function(done) {
