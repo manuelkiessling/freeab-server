@@ -10,4 +10,3 @@ rsync -ac --stats $2/ /opt/freeab/staging/server/ || exit 1
 cd /opt/freeab/staging/server
 npm install || exit 1
 ./node_modules/.bin/db-migrate up -e staging || exit 1
-./node_modules/.bin/jasmine-node --config FREEAB_ENV staging tests/ || exit 1
