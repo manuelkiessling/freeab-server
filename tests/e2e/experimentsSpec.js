@@ -8,7 +8,7 @@ var dbOptions = require('../../database.json');
 var dbWrapper = new DBWrapper('sqlite3', {'path': dbOptions.test.filename});
 dbWrapper.connect();
 
-var server = backend.init('test');
+var server = backend.init(dbWrapper);
 
 describe('The experiments API', function() {
 

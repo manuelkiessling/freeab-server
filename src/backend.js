@@ -1,14 +1,8 @@
 'use strict';
 
 var Percolator = require('percolator').Percolator;
-var DBWrapper = require('node-dbi').DBWrapper;
 
-var init = function(env) {
-  var dbOptions = require('../database.json');
-  if (dbOptions[env].driver === 'sqlite3') {
-    var dbWrapper = new DBWrapper('sqlite3', {'path': dbOptions[env].filename});
-  }
-  dbWrapper.connect();
+var init = function(dbWrapper) {
 
   var server = Percolator({port: 8080});
 
