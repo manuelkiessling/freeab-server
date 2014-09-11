@@ -57,6 +57,7 @@ describe('The experiments API', function() {
       },
       function (err, res, body) {
         done(err);
+        expect(res.statusCode).toBe(200);
         expect(body.status).toEqual('success');
         expect(body.experimentId).toEqual(1);
       }
