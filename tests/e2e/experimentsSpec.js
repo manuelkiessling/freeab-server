@@ -26,7 +26,7 @@ describe('The experiments API', function() {
 
   it('should return an experimentId when creating a new experiment', function(done) {
 
-    var body = {
+    var bodyData = {
       'name': 'Checkout page buttons',
       'scope': 50.0,
       'variations': {
@@ -48,7 +48,7 @@ describe('The experiments API', function() {
     request.post(
       {
         'url': 'http://localhost:8888/experiments/',
-        'body': body,
+        'body': bodyData,
         'json': true
       },
       function (err, res, body) {
@@ -59,6 +59,49 @@ describe('The experiments API', function() {
       }
     );
 
+  });
+
+  it('should not allow to add two experiments with the same name', function(done) {
+
+    var bodyData = {
+      'name': 'Checkout page buttons',
+      'scope': 50.0,
+      'variations': {
+        'Group A': {
+          'weight': 70.0,
+          'params': {
+            'foo': 'bar',
+          }
+        },
+        'Group B': {
+          'weight': 30.0,
+          'params': {
+            'foo': 'baz',
+          }
+        }
+      }
+    };
+
+    request.post(
+      {
+        'url': 'http://localhost:8888/experiments/',
+        'body': bodyData,
+        'json': true
+      },
+      function (err, res, body) {
+        request.post(
+          {
+            'url': 'http://localhost:8888/experiments/',
+            'body': bodyData,
+            'json': true
+          },
+          function (err, res, body) {
+            expect(res.statusCode).toBe(400);
+            expect(body.error.message).toEqual('Bad Request');
+            expect(body.error.detail).toEqual('An experiment with this name already exists');
+            done(err);
+          });
+      });
   });
 
 });
