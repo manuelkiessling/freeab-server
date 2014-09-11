@@ -12,16 +12,16 @@
   "staging": {
     "driver": "mysql",
     "host": "localhost",
-    "user": "FreeabserverStag",
-    "password": "H39847hdg8367gGtwj8374",
+    "user": "root",
+    "password": "root",
     "database": "freeab_server_staging"
   },
 
   "production": {
     "driver": "mysql",
     "host": "localhost",
-    "user": "FreeabserverProd",
-    "password": "9dij47Hbdb64hdf7z34hjL",
+    "user": "root",
+    "password": "root",
     "database": "freeab_server_production"
   }
 }

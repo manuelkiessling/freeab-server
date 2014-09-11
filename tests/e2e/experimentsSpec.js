@@ -1,25 +1,35 @@
 'use strict';
 
-var backend = require('../../src/backend');
-var request = require('request');
-var DBWrapper = require('node-dbi').DBWrapper;
+var env = process.env.FREEAB_ENV || 'test';
 
-var dbOptions = require('../../database.json');
-var dbWrapper = new DBWrapper('sqlite3', {'path': dbOptions.test.filename});
-dbWrapper.connect();
+var dbWrapper = require('../../src/database');
+var backend = require('../../src/backend');
+var async = require('async');
+var request = require('request');
 
 var server = backend.init(dbWrapper);
 
 describe('The experiments API', function() {
 
   beforeEach(function(done) {
-    dbWrapper.remove('experiment', '1', function(err) {
-      dbWrapper.remove('sqlite_sequence', '1', function(err) { // Reset SQLite primary key counter for all tables
-        server.listen(function () {
-          done(err);
+
+    async.series([
+      function(callback) {
+        dbWrapper.remove('experiment', '1', function(err) {
+          callback(err, null);
         });
+      },
+      function(callback) {
+        dbWrapper.remove('sqlite_sequence', '1', function(err) {
+          callback(err, null);
+        });
+      }
+    ], function(err, results) {
+      server.listen(function(err) {
+        done(err);
       });
     });
+
   });
 
   afterEach(function(done) {
