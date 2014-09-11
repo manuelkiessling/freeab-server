@@ -2,8 +2,13 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$PATH
 
+if [ -f /opt/freeab/staging/server/database.json ]; then
+    cp /opt/freeab/staging/server/database.json /var/tmp/freeab-server-staging-database.json || exit 1
+fi
+
 rm -rf /opt/freeab/staging/server || exit 1
 mkdir -p /opt/freeab/staging/server || exit 1
+cp /var/tmp/freeab-server-staging-database.json /opt/freeab/staging/server/database.json || exit 1
 
 rsync -ac --stats $2/ /opt/freeab/staging/server/ || exit 1
 
