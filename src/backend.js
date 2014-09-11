@@ -2,9 +2,9 @@
 
 var Percolator = require('percolator').Percolator;
 
-var init = function(dbWrapper) {
+var init = function(dbWrapper, port) {
 
-  var server = Percolator({port: 8080});
+  var server = Percolator({'port': port});
 
   server.route(
     '/experiments',

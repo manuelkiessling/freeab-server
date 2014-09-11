@@ -7,7 +7,7 @@ var backend = require('../../src/backend');
 var async = require('async');
 var request = require('request');
 
-var server = backend.init(dbWrapper);
+var server = backend.init(dbWrapper, 8888);
 
 describe('The experiments API', function() {
 
@@ -61,7 +61,7 @@ describe('The experiments API', function() {
 
     request.post(
       {
-        'url': 'http://localhost:8080/experiments/',
+        'url': 'http://localhost:8888/experiments/',
         'body': body,
         'json': true
       },
