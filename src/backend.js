@@ -1,5 +1,6 @@
 'use strict';
 
+var util = require('util');
 var Percolator = require('percolator').Percolator;
 
 var init = function(dbWrapper, port) {
@@ -11,13 +12,19 @@ var init = function(dbWrapper, port) {
 
     {
       POST: function(req, res) {
+
         req.onJson(function(err, obj) {
+          if (err) {
+            util.error(err);
+            return res.status.internalServerError();
+          }
 
           var data = {'name': obj.name, 'scope': obj.scope};
 
           dbWrapper.fetchRow('SELECT COUNT(*) AS cnt FROM experiment WHERE name = ?', [data.name], function(err, result) {
             if (err) {
-              return res.status.internalServerError(err);
+              util.error(err);
+              return res.status.internalServerError();
             }
 
             if (result['cnt'] > 0) {
@@ -25,7 +32,8 @@ var init = function(dbWrapper, port) {
             } else {
               dbWrapper.insert('experiment', data, function(err) {
                 if (err) {
-                  return res.status.internalServerError(err);
+                  util.error(err);
+                  return res.status.internalServerError();
                 }
                 var body = {
                   'status': 'success',
