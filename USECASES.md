@@ -108,8 +108,11 @@ backend and/or frontend code to decide what to change in the user experience.
 ### On error:
 
     {
-      "status": "failure",
-      "reason": "This is what went wrong..."
+      "error": {
+        "type": HTTP status code
+        "message": "Message for status code",
+        "detail": "Some details"
+      }
     }
 
 
