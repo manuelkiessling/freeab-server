@@ -3,7 +3,7 @@
 var util = require('util');
 var Percolator = require('percolator').Percolator;
 
-var init = function(dbWrapper, port) {
+var init = function(dbWrapper, port, generateHash) {
 
   var server = Percolator({'port': port});
 
@@ -19,7 +19,7 @@ var init = function(dbWrapper, port) {
             return res.status.internalServerError();
           }
 
-          var data = {'name': obj.name, 'scope': obj.scope};
+          var data = { 'name': obj.name, 'scope': obj.scope };
 
           dbWrapper.fetchRow('SELECT COUNT(*) AS cnt FROM experiment WHERE name = ?', [data.name], function(err, result) {
             if (err) {
@@ -49,6 +49,35 @@ var init = function(dbWrapper, port) {
       }
     }
   );
+
+  server.route(
+    '/participants',
+
+    {
+      POST: function (req, res) {
+
+          var hash = generateHash();
+
+          var data = { 'hash': hash };
+
+          dbWrapper.insert('participant', data, function (err) {
+            if (err) {
+              util.error(err);
+              return res.status.internalServerError();
+            }
+            var body = {
+              'status': 'success',
+              'participantHash': hash
+            };
+            res.object(body).send();
+
+          });
+
+      }
+    }
+
+  );
+
   return server;
 };
 

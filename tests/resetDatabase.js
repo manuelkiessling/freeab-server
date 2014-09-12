@@ -16,6 +16,11 @@ var resetDatabase = function(callback) {
           });
         },
         function(callback) {
+          dbWrapper.remove('participant', '1', function (err) {
+            callback(err);
+          });
+        },
+        function(callback) {
           dbWrapper.remove('sqlite_sequence', '1', function (err) {
             callback(err, null);
           });
@@ -36,7 +41,7 @@ var resetDatabase = function(callback) {
           });
         },
         function(callback) {
-          dbWrapper.fetchOne('TRUNCATE experiment', [], function(err, result) {
+          dbWrapper.fetchOne('TRUNCATE participant', [], function(err, result) {
             callback(err, null);
           });
         }
