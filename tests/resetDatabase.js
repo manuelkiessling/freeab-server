@@ -21,6 +21,21 @@ var resetDatabase = function(callback) {
           });
         },
         function(callback) {
+          dbWrapper.remove('variation', '1', function (err) {
+            callback(err);
+          });
+        },
+        function(callback) {
+          dbWrapper.remove('param', '1', function (err) {
+            callback(err);
+          });
+        },
+        function(callback) {
+          dbWrapper.remove('participant_experiment_variation', '1', function (err) {
+            callback(err, null);
+          });
+        },
+        function(callback) {
           dbWrapper.remove('sqlite_sequence', '1', function (err) {
             callback(err, null);
           });
@@ -42,6 +57,21 @@ var resetDatabase = function(callback) {
         },
         function(callback) {
           dbWrapper.fetchOne('TRUNCATE participant', [], function(err, result) {
+            callback(err, null);
+          });
+        },
+        function(callback) {
+          dbWrapper.fetchOne('TRUNCATE variation', [], function(err, result) {
+            callback(err, null);
+          });
+        },
+        function(callback) {
+          dbWrapper.fetchOne('TRUNCATE param', [], function(err, result) {
+            callback(err, null);
+          });
+        },
+        function(callback) {
+          dbWrapper.fetchOne('TRUNCATE participant_experiment_variation', [], function(err, result) {
             callback(err, null);
           });
         }

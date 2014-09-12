@@ -65,21 +65,32 @@ describe('The experiments API', function() {
 
     var bodyData = {
       'name': 'Checkout page buttons',
-      'scope': 50.0,
-      'variations': {
-        'Group A': {
-          'weight': 70.0,
-          'params': {
-            'foo': 'bar',
+      'scope': 100.0,
+      'variations':
+        [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params':
+              [
+                {
+                  'name': 'foo',
+                  'value': 'bar'
+                }
+              ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params':
+              [
+                {
+                  'name': 'foo',
+                  'value': 'baz'
+                }
+              ]
           }
-        },
-        'Group B': {
-          'weight': 30.0,
-          'params': {
-            'foo': 'baz',
-          }
-        }
-      }
+        ]
     };
 
     request.post(

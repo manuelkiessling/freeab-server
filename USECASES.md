@@ -129,45 +129,54 @@ backend and/or frontend code to decide what to change in the user experience.
 
     {
       "status": "success",
-      "participantId": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+      "participantHash": "ade10f256b5dd91d75190ed9168f90866b403d7166d5154817b4ab0cad084316"
     }
 
 
 ### On error:
 
     {
-      "status": "failure",
-      "reason": "This is what went wrong..."
+      "error": {
+        "type": HTTP status code
+        "message": "Message for status code",
+        "detail": "Some details"
+      }
     }
 
-You must associate this id with the participant. If your participants are web users, you might want to store
-the id as a cookie. Do not create a new identifier for a participant that already has an id - for known participants, simply
-request decisionsets.
+You must associate this hash with the participant. If your participants are web users, you might want to store
+the hash as a cookie. Do not create a new identifier for a participant that already has a hash - for known participants,
+simply request decisionsets.
 
 
 # Request experiment data for a known participant
 
 ## Request
 
-    GET /participants/<id>/decisionsets/
+    GET /participants/<participantHash>/decisionsets/
 
 ## Response
 
-### On success, if participant is part of any experiments:
+### On success, if participant is part of one or more experiments:
 
     {
       "status": "success",
-      "decisionsets": {
-        "Checkout page buttons": {
-          "button-color": "#ff99ee",
-          "show-note": false,
-          "increase-price-by": 4.00
+      "decisionsets":
+      [
+        {
+          "experimentName": "Checkout page buttons",
+          "params": {
+            "button-color": "#ff99ee",
+            "show-note": false,
+            "increase-price-by": 4.00
+          }
         },
-        "Homepage teaser": {
-          "teaser-id": 5,
-          "skip-second-step": true
+        {
+          "experimentName": "Homepage Test 2014-09",
+          "params": {
+            "teaser-id": "hfuz734"
+          }
         }
-      }
+      ]
     }
 
 ### On success, if participant is not part of any experiments:
@@ -181,8 +190,11 @@ request decisionsets.
 ### On error:
 
     {
-      "status": "failure",
-      "reason": "This is what went wrong..."
+      "error": {
+        "type": HTTP status code
+        "message": "Message for status code",
+        "detail": "Some details"
+      }
     }
 
 What you receive here is all the information that is needed to alter your UI or process for this specific participant.

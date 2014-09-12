@@ -21,24 +21,14 @@ exports.up = function(db, callback) {
 
       db.addIndex.bind(db, 'variation', 'fk_variation_experiment_1', 'experiment_id'),
 
-      db.createTable.bind(db, 'param_name', {
+      db.createTable.bind(db, 'param', {
         id: { type: 'int', primaryKey: true, autoIncrement: true, notNull: true },
         variation_id: { type: 'int', notNull: true },
-        name: { type: 'string', length: '128', notNull: true }
-      }),
-
-      db.addIndex.bind(db, 'param_name', 'fk_param_name_variation_1', 'variation_id'),
-
-      db.createTable.bind(db, 'param_value', {
-        id: { type: 'int', primaryKey: true, autoIncrement: true, notNull: true },
-        variation_id: { type: 'int', notNull: true },
-        param_name_id: { type: 'int', notNull: true },
+        name: { type: 'string', length: '128', notNull: true },
         value: { type: 'string', length: '128', notNull: true }
       }),
 
-      db.addIndex.bind(db, 'param_value', 'fk_param_value_variation_1', 'variation_id'),
-
-      db.addIndex.bind(db, 'param_value', 'fk_param_value_param_name_1', 'param_name_id'),
+      db.addIndex.bind(db, 'param', 'fk_param_variation_1', 'variation_id'),
 
     ], callback);
 };

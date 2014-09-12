@@ -3,4 +3,4 @@
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$PATH
 
 cd /opt/freeab/staging/server
-./node_modules/.bin/jasmine-node --forceexit --config FREEAB_ENV staging tests/ || exit 1
+./node_modules/.bin/jasmine-node --forceexit --captureExceptions --config FREEAB_ENV staging tests/ || exit 1
