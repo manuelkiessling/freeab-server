@@ -1,7 +1,7 @@
 'use strict';
 
 var env = require('./env');
-var dbWrapper = require('./database');
+var dbConnectionPool = require('./dbConnectionPool');
 var backend = require('./backend');
 var crypto = require('crypto');
 
@@ -19,7 +19,7 @@ var generateHash = function() {
   return crypto.createHash('sha256').update(rand).digest('hex');
 };
 
-var server = backend.init(dbWrapper, port, generateHash);
+var server = backend.init(dbConnectionPool, port, generateHash);
 
 server.listen(function() {
   console.dir(server.server.router.routes);
