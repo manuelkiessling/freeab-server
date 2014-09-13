@@ -140,8 +140,11 @@ var init = function(dbWrapper, port, generateHash) {
     {
       GET: function (req, res) {
         var hash = req.uri.parent().child();
+        util.log('Handling GET /participants/' + hash + '/decisionsets');
 
+        util.log('Start querying participant id');
         dbWrapper.fetchOne('SELECT id FROM participant WHERE hash = ?', [hash], function(err, participantId) {
+          util.log('Done querying participant id');
           if (err) {
             util.error(err);
             return res.status.internalServerError();
@@ -151,7 +154,10 @@ var init = function(dbWrapper, port, generateHash) {
             return res.status.notFound('A participant with hash ' + hash + ' does not exist');
           }
 
+          util.log('Start mapping participant where due');
           mapParticipantWhereDue(dbWrapper, participantId, function() {
+            util.log('Done mapping participant where due');
+            util.log('Start querying mapped variations');
             dbWrapper.fetchAll(
               ' SELECT experiment.name, variation_id' +
               ' FROM participant_experiment_variation' +
@@ -161,6 +167,7 @@ var init = function(dbWrapper, port, generateHash) {
               '  AND variation_id IS NOT NULL',
               [participantId],
               function(err, results) {
+                util.log('Done querying mapped variations');
                 if (err) {
                   util.error(err);
                   return res.status.internalServerError();
@@ -169,7 +176,9 @@ var init = function(dbWrapper, port, generateHash) {
                 for (var i=0; i < results.length; i++) {
                   paramSelectFunctions.push(
                     function(variationId, experimentName, callback) {
+                      util.log('Start querying params for variation');
                       dbWrapper.fetchAll('SELECT name, value FROM param WHERE variation_id = ?', [variationId], function(err, results) {
+                        util.log('Done querying params for variation');
                         if (err) {
                           util.error(err);
                           callback(err);
