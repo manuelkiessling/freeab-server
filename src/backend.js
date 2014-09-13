@@ -50,6 +50,7 @@ var init = function(dbWrapper, port, generateHash) {
                       dbWrapper.insert('variation', variationData, function(err) {
                         if (err) {
                           util.error(err);
+                          callback(err);
                         }
 
                         var variationId = dbWrapper.getLastInsertId();
@@ -77,7 +78,7 @@ var init = function(dbWrapper, port, generateHash) {
                           if (err) {
                             return res.status.internalServerError('Could not store params');
                           }
-                          callback();
+                          callback(err);
                         });
 
                       });
@@ -229,11 +230,10 @@ var mapParticipantWhereDue = function(dbWrapper, participantId, callback) {
         if (results.length > 0) {
           var functions = [];
           for (var i = 0; i < results.length; i++) {
-            var experimentId = results[i].id;
             functions.push(
-              function (callback) {
+              function (experimentId, callback) {
                 mapParticipantToExperiment(dbWrapper, participantId, experimentId, callback);
-              }
+              }.bind(this, results[i].id)
             );
           }
 

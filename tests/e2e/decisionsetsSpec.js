@@ -59,37 +59,9 @@ describe('The decisionsets API', function() {
 
   });
 
-  it('should return a decisionset for a participant if an experiment exists', function(done) {
+  it('should return decisionset for a participant if experiments exists', function(done) {
 
-    var bodyData = {
-      'name': 'Checkout page buttons',
-      'scope': 100.0,
-      'variations':
-        [
-          {
-            'name': 'Group A',
-            'weight': 100.0,
-            'params':
-              [
-                {
-                  'name': 'foo',
-                  'value': 'bar'
-                }
-              ]
-          },
-          {
-            'name': 'Group B',
-            'weight': 0.0,
-            'params':
-              [
-                {
-                  'name': 'foo',
-                  'value': 'baz'
-                }
-              ]
-          }
-        ]
-    };
+    var bodyData = 1;
 
     async.series(
       [
@@ -98,7 +70,75 @@ describe('The decisionsets API', function() {
           request.post(
             {
               'url': 'http://localhost:8888/experiments/',
-              'body': bodyData,
+              'body': {
+                'name': 'Experiment One',
+                'scope': 100.0,
+                'variations':
+                  [
+                    {
+                      'name': 'Group A',
+                      'weight': 100.0,
+                      'params':
+                        [
+                          {
+                            'name': 'ex-one-name',
+                            'value': 'ex-one-a-value'
+                          }
+                        ]
+                    },
+                    {
+                      'name': 'Group B',
+                      'weight': 0.0,
+                      'params':
+                        [
+                          {
+                            'name': 'ex-one-name',
+                            'value': 'ex-one-b-value'
+                          }
+                        ]
+                    }
+                  ]
+              },
+              'json': true
+            },
+            function (err, res, body) {
+              callback(err);
+            });
+        },
+
+        function(callback) {
+          request.post(
+            {
+              'url': 'http://localhost:8888/experiments/',
+              'body': {
+                'name': 'Experiment Two',
+                'scope': 100.0,
+                'variations':
+                  [
+                    {
+                      'name': 'Group A',
+                      'weight': 0.0,
+                      'params':
+                        [
+                          {
+                            'name': 'ex-two-name',
+                            'value': 'ex-two-a-value'
+                          }
+                        ]
+                    },
+                    {
+                      'name': 'Group B',
+                      'weight': 100.0,
+                      'params':
+                        [
+                          {
+                            'name': 'ex-two-name',
+                            'value': 'ex-two-b-value'
+                          }
+                        ]
+                    }
+                  ]
+              },
               'json': true
             },
             function (err, res, body) {
@@ -128,8 +168,9 @@ describe('The decisionsets API', function() {
             function (err, res, body) {
               expect(res.statusCode).toBe(200);
               expect(body.status).toEqual('success');
-              expect(body.decisionsets.length).toEqual(1);
-              expect(body.decisionsets[0].params['foo']).toEqual('bar');
+              expect(body.decisionsets.length).toEqual(2);
+              expect(body.decisionsets[0].params['ex-one-name']).toEqual('ex-one-a-value');
+              expect(body.decisionsets[1].params['ex-two-name']).toEqual('ex-two-b-value');
               callback(err);
             }
           );
