@@ -1,30 +1,35 @@
 'use strict';
 
+var dbConnectionPool = require('../../src/dbConnectionPool');
 var resetDatabase = require('../resetDatabase');
-var dbWrapper = require('../../src/database');
 var backend = require('../../src/backend');
 var async = require('async');
 var request = require('request');
 
-var server = backend.init(dbWrapper, 8888);
+var theHash = 0;
+var generateHash = function() {
+  return theHash;
+};
 
-describe('The experiments API', function() {
+var server = backend.init(dbConnectionPool, 8888, generateHash);
 
-  beforeEach(function(done) {
-    resetDatabase(function() {
-      server.listen(function(err) {
+describe('The experiments API', function () {
+
+  beforeEach(function (done) {
+    resetDatabase(function () {
+      server.listen(function (err) {
         done(err);
       });
     });
   });
 
-  afterEach(function(done) {
-    server.close(function() {
+  afterEach(function (done) {
+    server.close(function () {
       done();
     });
   });
 
-  it('should return an experimentId when creating a new experiment', function(done) {
+  it('should return an experimentId when creating a new experiment', function (done) {
 
     var bodyData = {
       'name': 'Checkout page buttons',
@@ -61,36 +66,33 @@ describe('The experiments API', function() {
 
   });
 
-  it('should not allow to add two experiments with the same name', function(done) {
+  it('should not allow to add two experiments with the same name', function (done) {
 
     var bodyData = {
       'name': 'Checkout page buttons',
       'scope': 100.0,
-      'variations':
-        [
-          {
-            'name': 'Group A',
-            'weight': 70.0,
-            'params':
-              [
-                {
-                  'name': 'foo',
-                  'value': 'bar'
-                }
-              ]
-          },
-          {
-            'name': 'Group B',
-            'weight': 30.0,
-            'params':
-              [
-                {
-                  'name': 'foo',
-                  'value': 'baz'
-                }
-              ]
-          }
-        ]
+      'variations': [
+        {
+          'name': 'Group A',
+          'weight': 70.0,
+          'params': [
+            {
+              'name': 'foo',
+              'value': 'bar'
+            }
+          ]
+        },
+        {
+          'name': 'Group B',
+          'weight': 30.0,
+          'params': [
+            {
+              'name': 'foo',
+              'value': 'baz'
+            }
+          ]
+        }
+      ]
     };
 
     request.post(

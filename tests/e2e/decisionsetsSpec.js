@@ -1,18 +1,17 @@
 'use strict';
 
+var dbConnectionPool = require('../../src/dbConnectionPool');
 var resetDatabase = require('../resetDatabase');
-var dbWrapper = require('../../src/database');
 var backend = require('../../src/backend');
 var async = require('async');
 var request = require('request');
 
 var theHash = 0;
-
 var generateHash = function() {
   return theHash;
 };
 
-var server = backend.init(dbWrapper, 8888, generateHash);
+var server = backend.init(dbConnectionPool, 8888, generateHash);
 
 describe('The decisionsets API', function() {
 

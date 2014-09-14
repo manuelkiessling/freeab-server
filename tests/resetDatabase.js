@@ -2,14 +2,22 @@
 
 var env = require('../src/env.js');
 var dbOptions = require('../database.json')[env];
-var dbWrapper = require('../src/database');
+var dbConnectionPool = require('../src/dbConnectionPool');
 var async = require('async');
 
 var resetDatabase = function(callback) {
+  var dbWrapper;
+
   if (dbOptions.driver === 'sqlite3') {
 
     async.series(
       [
+        function(callback) {
+          dbConnectionPool.acquire(function(err, dbConnection) {
+            dbWrapper = dbConnection;
+            callback(err);
+          });
+        },
         function(callback) {
           dbWrapper.remove('experiment', '1', function (err) {
             callback(err);
@@ -50,6 +58,12 @@ var resetDatabase = function(callback) {
 
     async.series(
       [
+        function(callback) {
+          dbConnectionPool.acquire(function(err, dbConnection) {
+            dbWrapper = dbConnection;
+            callback(err);
+          });
+        },
         function(callback) {
           dbWrapper.fetchOne('TRUNCATE experiment', [], function(err, result) {
             callback(err, null);
