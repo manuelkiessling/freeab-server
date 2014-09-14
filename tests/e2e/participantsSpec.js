@@ -1,51 +1,53 @@
 'use strict';
 
-var dbConnectionPool = require('../../src/dbConnectionPool');
-var resetDatabase = require('../resetDatabase');
-var backend = require('../../src/backend');
-var async = require('async');
-var request = require('request');
+(function() {
+  var dbConnectionPool = require('../../src/dbConnectionPool');
+  var resetDatabase = require('../resetDatabase');
+  var backend = require('../../src/backend');
+  var async = require('async');
+  var request = require('request');
 
-var theHash = 0;
-var generateHash = function() {
-  return theHash;
-};
+  var theHash = 0;
+  var generateHash = function () {
+    return theHash;
+  };
 
-var server = backend.init(dbConnectionPool, 8888, generateHash);
+  var server = backend.init(dbConnectionPool, 8888, generateHash);
 
-describe('The participants API', function() {
+  describe('The participants API', function () {
 
-  beforeEach(function(done) {
-    resetDatabase(function() {
-      server.listen(function(err) {
-        done(err);
+    beforeEach(function (done) {
+      resetDatabase(function () {
+        server.listen(function (err) {
+          done(err);
+        });
       });
     });
-  });
 
-  afterEach(function(done) {
-    server.close(function() {
-      done();
+    afterEach(function (done) {
+      server.close(function () {
+        done();
+      });
     });
+
+    it('should return a participantHash when being asked to add a new participant', function (done) {
+
+      theHash = 1;
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/participants/',
+          'json': true
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(200);
+          expect(body.status).toEqual('success');
+          expect(body.participantHash).toEqual(1);
+          done(err);
+        }
+      );
+
+    });
+
   });
-
-  it('should return a participantHash when being asked to add a new participant', function(done) {
-
-    theHash = 1;
-
-    request.post(
-      {
-        'url': 'http://localhost:8888/participants/',
-        'json': true
-      },
-      function (err, res, body) {
-        expect(res.statusCode).toBe(200);
-        expect(body.status).toEqual('success');
-        expect(body.participantHash).toEqual(1);
-        done(err);
-      }
-    );
-
-  });
-
-});
+})();
