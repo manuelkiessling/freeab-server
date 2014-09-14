@@ -22,6 +22,7 @@ var init = function(dbConnectionPool, port, generateHash) {
 
           dbConnectionPool.acquire(function(err, dbConnection) {
             if (err) {
+              util.error(err);
               return res.status.internalServerError();
             }
             dbConnection.fetchRow('SELECT COUNT(*) AS cnt FROM experiment WHERE name = ?', [obj.name], function(err, result) {
@@ -80,6 +81,7 @@ var init = function(dbConnectionPool, port, generateHash) {
 
                           async.parallel(paramInsertFunctions, function(err, results) {
                             if (err) {
+                              util.error(err);
                               return res.status.internalServerError('Could not store params');
                             }
                             callback(err);
@@ -92,6 +94,7 @@ var init = function(dbConnectionPool, port, generateHash) {
 
                   async.parallel(variationInsertFunctions, function(err, results) {
                     if (err) {
+                      util.error(err);
                       return res.status.internalServerError('Could not store variations');
                     }
 
@@ -122,14 +125,12 @@ var init = function(dbConnectionPool, port, generateHash) {
 
         dbConnectionPool.acquire(function(err, dbConnection) {
           if (err) {
-            util.error(1);
             util.error(err);
             return res.status.internalServerError();
           }
           else {
             dbConnection.insert('participant', data, function (err) {
               if (err) {
-                util.error(2);
                 util.error(err);
                 return res.status.internalServerError();
               }
@@ -138,7 +139,15 @@ var init = function(dbConnectionPool, port, generateHash) {
                 'participantHash': hash
               };
               dbConnectionPool.release(dbConnection);
-              res.object(body).send();
+              try {
+                res.object(body).send();
+              } catch (err) {
+                console.log('******************************');
+                console.dir(err);
+                console.log(err.stack);
+                //console.dir(res);
+                //process.exit();
+              }
             });
           }
         });
@@ -154,6 +163,7 @@ var init = function(dbConnectionPool, port, generateHash) {
       GET: function (req, res) {
         dbConnectionPool.acquire(function(err, dbConnection) {
           if (err) {
+            util.error(err);
             return res.status.internalServerError();
           }
           var hash = req.uri.parent().child();

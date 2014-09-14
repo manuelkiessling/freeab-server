@@ -10,7 +10,7 @@
     "generic-pool": "^2.1.1",
     "mysql": "^2.5.0",
     "node-dbi": "^0.7.1",
-    "percolator": "^1.5.0"
+    "percolator": "git://github.com/cainus/percolator.git#2305f0129c362e5bbdea7bc138d5640dab6377dd"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",
