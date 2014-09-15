@@ -430,8 +430,8 @@
         util.error(err);
         callback(err);
       } else {
-        // Will this participant be part in this experiment?
-        if (Math.random() * 100.0 > result.scope) {
+        // Will this participant be part of this experiment?
+        if (Math.random() * 100.0 >= result.scope) {
           // No
           writeMapping(participantId, experimentId, null, function(err) {
             callback(err);
@@ -455,7 +455,7 @@
                 var rand = Math.random() * 100.0;
                 var lastAccumulatedWeight = 0;
                 for (var i = 0; i < results.length; i++) {
-                  if (rand > lastAccumulatedWeight && rand <= results[i].accumulatedWeight) {
+                  if (rand >= lastAccumulatedWeight && rand < results[i].accumulatedWeight) {
                     variationId = results[i].id;
                     lastAccumulatedWeight = results[i].accumulatedWeight;
                   }
