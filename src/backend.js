@@ -462,7 +462,6 @@
           }
         );
       } catch (err) {
-
         callback(null);
       }
     };
