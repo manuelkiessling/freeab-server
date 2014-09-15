@@ -10,7 +10,7 @@
 
   var clientJsTemplate = require('./client.js.template');
 
-  var init = function(dbConnectionPool, port, staticDir, generateHash) {
+  var init = function(dbConnectionPool, port, generateHash) {
 
     var server = Percolator({
       'port': port,
@@ -112,6 +112,22 @@
               return res.status.internalServerError();
             }
 
+            if (obj['name'] === undefined) {
+              return res.status.badRequest('An experiment needs a name');
+            }
+
+            if (obj['name'] === '') {
+              return res.status.badRequest('The name of an experiment must not be empty');
+            }
+
+            if (obj.variations.length < 2) {
+              return res.status.badRequest('An experiment needs at least 2 variations');
+            }
+
+            if (obj['scope'] === undefined) {
+              return res.status.badRequest('An experiment needs a scope');
+            }
+
             dbConnectionPool.acquire(function(err, dbConnection) {
               if (err) {
                 util.error(err);
@@ -141,18 +157,13 @@
                     var variationInsertFunctions = [];
                     var sumOfVariationWeights = 0;
 
-                    if (obj.variations.length < 2) {
-                      dbConnectionPool.release(dbConnection);
-                      return res.status.badRequest('An experiment needs at least 2 variations');
-                    }
-
                     for (var i=0; i < obj.variations.length; i++) {
                       var variationData = {
                         'experiment_id': experimentId,
                         'name': obj.variations[i].name,
                         'weight': obj.variations[i].weight,
                       };
-                      sumOfVariationWeights = sumOfVariationWeights + obj.variations[i].weight;
+                      sumOfVariationWeights += obj.variations[i].weight;
                       var params = obj.variations[i].params;
                       variationInsertFunctions.push(
                         function(variationData, params, callback) {

@@ -12,13 +12,15 @@
     return theHash;
   };
 
-  var server = backend.init(dbConnectionPool, 8888, null, generateHash);
+  var server = backend.init(dbConnectionPool, 8888, generateHash);
 
   describe('The experiments API', function () {
 
     beforeEach(function (done) {
       resetDatabase(function () {
+        console.log('About to start up...');
         server.listen(function (err) {
+          console.log('Starting up...');
           done(err);
         });
       });
@@ -26,6 +28,7 @@
 
     afterEach(function (done) {
       server.close(function () {
+        console.log('Shutting down....');
         done();
       });
     });
@@ -69,7 +72,6 @@
           }
         },
         function (err, res, body) {
-          console.log(body);
           expect(res.statusCode).toBe(200);
           expect(body.status).toEqual('success');
           expect(body.experimentId).toEqual(1);
@@ -192,7 +194,7 @@
         'variations': [
           {
             'name': 'Group A',
-            'weight': 100.0,
+            'weight': 70.0,
             'params': [
               {
                 'name': 'foo',
@@ -216,6 +218,148 @@
           expect(res.statusCode).toBe(400);
           expect(body.error.message).toEqual('Bad Request');
           expect(body.error.detail).toEqual('An experiment needs at least 2 variations');
+          done(err);
+        }
+      );
+
+    });
+
+    it('should not allow to add an experiment without a name', function (done) {
+
+      var bodyData = {
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('An experiment needs a name');
+          done(err);
+        }
+      );
+
+    });
+
+    it('should not allow to add an experiment with an empty name', function (done) {
+
+      var bodyData = {
+        'name': '',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('The name of an experiment must not be empty');
+          done(err);
+        }
+      );
+
+    });
+
+    it('should not allow to add an experiment without a scope', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('An experiment needs a scope');
           done(err);
         }
       );

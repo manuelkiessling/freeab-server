@@ -115,6 +115,7 @@
 
       ],
       function (err, results) {
+        dbConnectionPool.release(dbWrapper);
         callback(err);
       }
 

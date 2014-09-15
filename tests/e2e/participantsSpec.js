@@ -12,13 +12,15 @@
     return theHash;
   };
 
-  var server = backend.init(dbConnectionPool, 8888, null, generateHash);
+  var server = backend.init(dbConnectionPool, 8888, generateHash);
 
   describe('The participants API', function () {
 
     beforeEach(function (done) {
       resetDatabase(function () {
+        console.log('About to start up...');
         server.listen(function (err) {
+          console.log('Starting up...');
           done(err);
         });
       });
@@ -26,6 +28,7 @@
 
     afterEach(function (done) {
       server.close(function () {
+        console.log('Shutting down...');
         done();
       });
     });
@@ -78,9 +81,7 @@
 
     });
 
-    it('should return decisionset for a participant if experiments exists', function (done) {
-
-      var bodyData = 1;
+    it('should return decisionsets for a participant if experiments exists', function (done) {
 
       async.series(
         [
@@ -201,7 +202,7 @@
                 }
               },
               function (err, res, body) {
-                callback(err);
+                callback(null);
               });
           },
 
