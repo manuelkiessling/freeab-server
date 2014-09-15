@@ -4,6 +4,8 @@
 
     POST /experiments/
 
+You must authenticate for this request by adding a 'x-api-key' header with a valid API key.
+
 ## Request body: A multilevel associative array, encoded as JSON
 
     {
@@ -152,7 +154,7 @@ simply request decisionsets.
 
 ## Request
 
-    GET /participants/<participantHash>/decisionsets/
+    GET /participants/<participantHash>
 
 ## Response
 
@@ -164,6 +166,7 @@ simply request decisionsets.
       [
         {
           "experimentName": "Checkout page buttons",
+          "variationName": "Group B",
           "params": {
             "button-color": "#ff99ee",
             "show-note": false,
@@ -172,10 +175,15 @@ simply request decisionsets.
         },
         {
           "experimentName": "Homepage Test 2014-09",
+          "variationName": "Group A",
           "params": {
             "teaser-id": "hfuz734"
           }
         }
+      ]
+      "trackingidentifiers":
+      [
+        "freeab_checkout-page-buttons_group-b"
       ]
     }
 
@@ -183,7 +191,7 @@ simply request decisionsets.
 
     {
       "status": "success",
-      "decisionsets": null
+      "decisionsets": []
     }
 
 
@@ -205,61 +213,28 @@ react to this, either in your frontend, your backend, or both.
 
 # Usage
 
-For example, in your PHP request controller you could do this to route your user according to an experiment:
+## In the browser
 
-    <?php
+Put the freeab JS into your page, before the opening body tag:
 
-    $abtestUserId = $_COOKIE['abtest_userid']; // or wherever you decided to store the FreeAB user ID
+    <script>
+    /* Change this according to your needs */
+    var freeabServerAddress = 'http://freeab.example.com';
 
-    if ($abtestUserId === null) { // User is not yet managed by AB test system
-      $abtestHandler = new FreeabHandler();
-      $abtestUserId = $abtestHandler->addUser();
-      setcookie('abtest_userid', $abtestUserId);
-    }
+    /* Do not change code below this line */
+    window.freeabParticipant = {};
+    window.freeabParticipantListeners = [];
+    window.freeabParticipant.on = function(event, callback) {
+      window.freeabParticipantListeners.push(callback);
+    };
+    document.write('<scr' + 'ipt async src="http://' + freeabServerAddress + '/client.js"><\/sc' + 'ript>');
+    </script>
 
-    $abtestUser = new FreeabUser($abtestUserId);
+Now you can manipulate your DOM like this:
 
-    if ($abtestUser->isPartOfExperiment('Homepage Teaser')) {
-
-      $abtestSettings = $abtestUser->getSettingsForExperiment('Homepage Teaser');
-
-      if ($abtestSettings->get('skip-second-step') === true) {
-        $response->redirect("/step3.php");
-      } else {
-        $response->redirect("/step2.php");
+    window.freeabParticipant.on('ready', function() {
+      if (window.freeabParticipant.isPartOfExperiment('My fine experiment')) {
+        var params = window.freeabParticipant.getParamsForExperiment('My fine experiment');
+        document.getElementById('foo').textContent = params['text'];
       }
-    }
-
-    ?>
-
-
-Or, in your JavaScript frontend, you could do this:
-
-    var handleAbtest = function(abtestUserId) {
-      new FreeabUser(abtestUserId).then(function(abtestUser) {
-
-        if (abtestUser.isPartOfExperiment('Checkout page buttons')) {
-
-          var abtestSettings = abtestUser.getSettingsForExperiment('Checkout page buttons');
-
-          if (abtestSettings.get('show-note') === false) {
-            $('#note-element').hide();
-          }
-
-          $('#sale-button').style('color', abtestSettings.get('button-color'));
-        }
-
-      });
-    }
-
-    var abtestUserId = ...; // read from cookie or other source
-
-    if (abtestUserId === null) { // User is not yet managed by AB test system
-      var abtestHandler = new FreeabHandler();
-      abtestHandler.addUser().then(function(abtestUserId) {
-        // Store abtestUserId in cookie or elsewhere
-        handleAbtest(abtestUserId);
-      });
-    } else {
-      handleAbtest(abtestUserId);
-    }
+    });

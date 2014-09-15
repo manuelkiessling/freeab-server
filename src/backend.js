@@ -14,6 +14,7 @@
 
     var server = Percolator({
       'port': port,
+      'autoLink': false,
     });
 
     server.route(
