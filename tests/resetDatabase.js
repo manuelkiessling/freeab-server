@@ -24,6 +24,11 @@
             async.series(
               [
                 function (callback) {
+                  dbWrapper.remove('apikey', '1', function (err) {
+                    callback(err);
+                  });
+                },
+                function (callback) {
                   dbWrapper.remove('experiment', '1', function (err) {
                     callback(err);
                   });
@@ -63,6 +68,11 @@
 
             async.series(
               [
+                function (callback) {
+                  dbWrapper.fetchOne('TRUNCATE apikey', [], function (err, result) {
+                    callback(err, null);
+                  });
+                },
                 function (callback) {
                   dbWrapper.fetchOne('TRUNCATE experiment', [], function (err, result) {
                     callback(err, null);

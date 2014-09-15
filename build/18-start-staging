@@ -1,0 +1,20 @@
+#!/bin/bash
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$PATH
+
+touch /var/log/freeab-server.staging.forever.log
+chown nobody:nogroup /var/log/freeab-server.staging.forever.log
+touch /var/log/freeab-server.staging.info.log
+chown nobody:nogroup /var/log/freeab-server.staging.forever.log
+touch /var/log/freeab-server.staging.error.log
+chown nobody:nogroup /var/log/freeab-server.staging.forever.log
+
+sudo -u nobody \
+    FOREVER_ROOT=/var/tmp \
+    /opt/freeab/staging/server/node_modules/.bin/forever \
+    -a \
+    -l /var/log/freeab-server.staging.forever.log \
+    -o /var/log/freeab-server.staging.info.log \
+    -e /var/log/freeab-server.staging.error.log \
+    --uid "freeab-server-staging" \
+    start /opt/freeab/staging/server/src/index.js staging

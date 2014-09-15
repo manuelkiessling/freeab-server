@@ -2,6 +2,8 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$PATH
 
+sudo -u nobody FOREVER_ROOT=/var/tmp /opt/freeab/staging/server/node_modules/.bin/forever stop freeab-server-staging
+
 if [ -f /opt/freeab/staging/server/database.json ]; then
     cp /opt/freeab/staging/server/database.json /var/tmp/freeab-server-staging-database.json || exit 1
 fi
