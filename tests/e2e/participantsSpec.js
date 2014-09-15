@@ -18,9 +18,7 @@
 
     beforeEach(function (done) {
       resetDatabase(function () {
-        console.log('About to start up...');
         server.listen(function (err) {
-          console.log('Starting up...');
           done(err);
         });
       });
@@ -28,7 +26,6 @@
 
     afterEach(function (done) {
       server.close(function () {
-        console.log('Shutting down...');
         done();
       });
     });

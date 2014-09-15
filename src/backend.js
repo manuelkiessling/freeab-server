@@ -158,6 +158,14 @@
                     var sumOfVariationWeights = 0;
 
                     for (var i=0; i < obj.variations.length; i++) {
+                      if (obj.variations[i].name === undefined) {
+                        dbConnectionPool.release(dbConnection);
+                        return res.status.badRequest('Variations must have a name');
+                      }
+                      if (obj.variations[i].name === '') {
+                        dbConnectionPool.release(dbConnection);
+                        return res.status.badRequest('Variations must have a non-empty name');
+                      }
                       if (obj.variations[i].params === undefined) {
                         dbConnectionPool.release(dbConnection);
                         return res.status.badRequest('Variation "' + obj.variations[i].name + '" does not have params');
@@ -179,42 +187,40 @@
                             if (err) {
                               util.error(err);
                               callback(err);
-                            }
-
-                            var variationId = dbConnection.getLastInsertId();
-
-                            var paramInsertFunctions = [];
-                            for (var i=0; i < params.length; i++) {
-                              if (params[i].name === undefined || params[i].value === undefined ) {
-                                dbConnectionPool.release(dbConnection);
-                                return res.status.badRequest('Variation "' + variationData.name + '" has params without name/value');
+                            } else {
+                              var variationId = dbConnection.getLastInsertId();
+                              var paramInsertFunctions = [];
+                              for (var i = 0; i < params.length; i++) {
+                                if (params[i].name === undefined || params[i].value === undefined) {
+                                  dbConnectionPool.release(dbConnection);
+                                  return res.status.badRequest('Variation "' + variationData.name + '" has params without name/value');
+                                }
+                                var paramData = {
+                                  'variation_id': variationId,
+                                  'name': params[i].name,
+                                  'value': params[i].value
+                                };
+                                paramInsertFunctions.push(
+                                  function (paramData, callback) {
+                                    dbConnection.insert('param', paramData, function (err) {
+                                      if (err) {
+                                        util.error(err);
+                                      }
+                                      callback(err);
+                                    });
+                                  }.bind(this, paramData)
+                                );
                               }
-                              var paramData = {
-                                'variation_id': variationId,
-                                'name': params[i].name,
-                                'value': params[i].value
-                              };
-                              paramInsertFunctions.push(
-                                function(paramData, callback) {
-                                  dbConnection.insert('param', paramData, function(err) {
-                                    if (err) {
-                                      util.error(err);
-                                    }
-                                    callback(err);
-                                  });
-                                }.bind(this, paramData)
-                              );
+
+                              async.parallel(paramInsertFunctions, function (err, results) {
+                                if (err) {
+                                  util.error(err);
+                                  dbConnectionPool.release(dbConnection);
+                                  return res.status.internalServerError('Could not store params');
+                                }
+                                callback(err);
+                              });
                             }
-
-                            async.parallel(paramInsertFunctions, function(err, results) {
-                              if (err) {
-                                util.error(err);
-                                dbConnectionPool.release(dbConnection);
-                                return res.status.internalServerError('Could not store params');
-                              }
-                              callback(err);
-                            });
-
                           });
                         }.bind(this, variationData, params)
                       );

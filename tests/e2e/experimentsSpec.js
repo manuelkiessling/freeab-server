@@ -18,9 +18,7 @@
 
     beforeEach(function (done) {
       resetDatabase(function () {
-        console.log('About to start up...');
-        server.listen(function (err) {
-          console.log('Starting up...');
+       server.listen(function (err) {
           done(err);
         });
       });
@@ -28,7 +26,6 @@
 
     afterEach(function (done) {
       server.close(function () {
-        console.log('Shutting down....');
         done();
       });
     });
@@ -366,6 +363,148 @@
 
     });
 
+    it('should not allow to add an experiment with a variation without a name', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('Variations must have a name');
+          done(err);
+        }
+      );
+
+    });
+
+    it('should not allow to add an experiment with a variation with an empty name', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': '',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('Variations must have a non-empty name');
+          done(err);
+        }
+      );
+
+    });
+
+    it('should not allow to add an experiment with variations that have the same name', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group A',
+            'weight': 30.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(500);
+          expect(body.error.message).toEqual('Internal Server Error');
+          done(err);
+        }
+      );
+
+    });
+
     it('should not allow to add an experiment with a variation without params', function (done) {
 
       var bodyData = {
@@ -408,7 +547,7 @@
 
     });
 
-    it('should not allow to add an experiment with a variation without empty params', function (done) {
+    it('should not allow to add an experiment with a variation with empty params', function (done) {
 
       var bodyData = {
         'name': 'Checkout page buttons',
