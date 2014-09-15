@@ -88,11 +88,11 @@
               {
                 'url': 'http://localhost:8888/api/experiments/',
                 'body': {
-                  'name': 'Experiment One',
+                  'name': 'Experiment Number One',
                   'scope': 100.0,
                   'variations': [
                     {
-                      'name': 'Group A',
+                      'name': 'Group Number A',
                       'weight': 100.0,
                       'params': [
                         {
@@ -102,7 +102,7 @@
                       ]
                     },
                     {
-                      'name': 'Group B',
+                      'name': 'Group Number B',
                       'weight': 0.0,
                       'params': [
                         {
@@ -128,11 +128,11 @@
               {
                 'url': 'http://localhost:8888/api/experiments/',
                 'body': {
-                  'name': 'Experiment Two',
+                  'name': 'Experiment Number Two',
                   'scope': 100.0,
                   'variations': [
                     {
-                      'name': 'Group A',
+                      'name': 'Group Number A',
                       'weight': 0.0,
                       'params': [
                         {
@@ -142,7 +142,7 @@
                       ]
                     },
                     {
-                      'name': 'Group B',
+                      'name': 'Group Number B',
                       'weight': 100.0,
                       'params': [
                         {
@@ -168,11 +168,11 @@
               {
                 'url': 'http://localhost:8888/api/experiments/',
                 'body': {
-                  'name': 'Experiment Three',
+                  'name': 'Experiment Number Three',
                   'scope': 0.0,
                   'variations': [
                     {
-                      'name': 'Group A',
+                      'name': 'Group Number A',
                       'weight': 100.0,
                       'params': [
                         {
@@ -182,7 +182,7 @@
                       ]
                     },
                     {
-                      'name': 'Group B',
+                      'name': 'Group Number B',
                       'weight': 0.0,
                       'params': [
                         {
@@ -229,8 +229,8 @@
                 expect(body.decisionsets[0].params['ex-one-name']).toEqual('ex-one-a-value');
                 expect(body.decisionsets[1].params['ex-two-name']).toEqual('ex-two-b-value');
                 expect(body.trackingidentifiers.length).toEqual(2);
-                expect(body.trackingidentifiers[0]).toEqual('freeab_experiment-one_group-a');
-                expect(body.trackingidentifiers[1]).toEqual('freeab_experiment-two_group-b');
+                expect(body.trackingidentifiers[0]).toEqual('freeab_experiment-number-one_group-number-a');
+                expect(body.trackingidentifiers[1]).toEqual('freeab_experiment-number-two_group-number-b');
                 callback(err);
               }
             );

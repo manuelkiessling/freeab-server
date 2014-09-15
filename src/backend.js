@@ -365,9 +365,9 @@
                           trackingidentifiers.push(
                             (
                               'freeab_'
-                              + encodeURIComponent(results[i].experimentName.replace(' ',  '-', 'gi'))
+                              + encodeURIComponent(results[i].experimentName.replace(/ /g, '-'))
                               + '_'
-                              + encodeURIComponent(results[i].variationName.replace(' ',  '-', 'gi'))
+                              + encodeURIComponent(results[i].variationName.replace(/ /g, '-'))
                             ).toLowerCase()
                           );
                         }
