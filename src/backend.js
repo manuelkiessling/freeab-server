@@ -16,7 +16,12 @@
         authenticate: function(req, res, callback) {
           var apiKey = req.headers['x-api-key'];
           dbConnectionPool.acquire(function(err, dbConnection) {
+            if (err) {
+              util.error(err);
+              return res.status.internalServerError();
+            }
             dbConnection.fetchOne('SELECT COUNT(id) AS cnt FROM apikey WHERE apikey = ?', [apiKey], function(err, cnt) {
+              dbConnectionPool.release(dbConnection);
               if (cnt === 1) {
                 callback(false, apiKey);
               } else {
@@ -37,21 +42,25 @@
             dbConnectionPool.acquire(function(err, dbConnection) {
               if (err) {
                 util.error(err);
+                dbConnectionPool.release(dbConnection);
                 return res.status.internalServerError();
               }
               dbConnection.fetchRow('SELECT COUNT(*) AS cnt FROM experiment WHERE name = ?', [obj.name], function(err, result) {
                 if (err) {
                   util.error(err);
+                  dbConnectionPool.release(dbConnection);
                   return res.status.internalServerError();
                 }
 
                 if (result['cnt'] > 0) {
+                  dbConnectionPool.release(dbConnection);
                   return res.status.badRequest('An experiment with this name already exists');
                 } else {
                   var experimentData = { 'name': obj.name, 'scope': obj.scope };
                   dbConnection.insert('experiment', experimentData, function(err) {
                     if (err) {
                       util.error(err);
+                      dbConnectionPool.release(dbConnection);
                       return res.status.internalServerError();
                     }
                     var experimentId = dbConnection.getLastInsertId();
@@ -96,6 +105,7 @@
                             async.parallel(paramInsertFunctions, function(err, results) {
                               if (err) {
                                 util.error(err);
+                                dbConnectionPool.release(dbConnection);
                                 return res.status.internalServerError('Could not store params');
                               }
                               callback(err);
@@ -109,6 +119,7 @@
                     async.parallel(variationInsertFunctions, function(err, results) {
                       if (err) {
                         util.error(err);
+                        dbConnectionPool.release(dbConnection);
                         return res.status.internalServerError('Could not store variations');
                       }
 
@@ -146,6 +157,7 @@
               dbConnection.insert('participant', data, function (err) {
                 if (err) {
                   util.error(err);
+                  dbConnectionPool.release(dbConnection);
                   return res.status.internalServerError();
                 }
                 var body = {
@@ -177,10 +189,12 @@
             dbConnection.fetchOne('SELECT id FROM participant WHERE hash = ?', [hash], function (err, participantId) {
               if (err) {
                 util.error(err);
+                dbConnectionPool.release(dbConnection);
                 return res.status.internalServerError();
               }
 
               if (participantId === null) {
+                dbConnectionPool.release(dbConnection);
                 return res.status.notFound('A participant with hash ' + hash + ' does not exist');
               }
 
@@ -196,6 +210,7 @@
                   function (err, results) {
                     if (err) {
                       util.error(err);
+                      dbConnectionPool.release(dbConnection);
                       return res.status.internalServerError();
                     }
                     var paramSelectFunctions = []
@@ -224,6 +239,7 @@
                     async.parallel(paramSelectFunctions, function (err, results) {
                       if (err) {
                         util.error(err);
+                        dbConnectionPool.release(dbConnection);
                         return res.status.internalServerError();
                       } else {
                         var body = {
