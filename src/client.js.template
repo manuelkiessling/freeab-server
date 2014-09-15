@@ -1,24 +1,25 @@
 'use strict';
 
 module.exports =
-"var data = <PLACEHOLDER/>; " +
-"var trackingidentifiers = data.trackingidentifiers; " +
-"var decisionsets = data.decisionsets; " +
-"window.freeabParticipant = { " +
-" 'isPartOfExperiment': function(experimentName) { " +
-"    for (var i=0; i < decisionsets.length; i++) { " +
-"      if (decisionsets[i].experimentName == experimentName) { " +
+"window.freeabData = <PLACEHOLDER/>; " +
+"window.freeabParticipant.trackingidentifiers = window.freeabData.trackingidentifiers; " +
+"window.freeabParticipant.isPartOfExperiment = function(experimentName) { " +
+"    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
+"      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
 "        return true; " +
 "      } " +
 "    } " +
 "    return false; " +
-" }, " +
-" 'getParamsForExperiment': function(experimentName) { " +
-"    for (var i=0; i < decisionsets.length; i++) { " +
-"       if (decisionsets[i].experimentName == experimentName) { " +
-"         return decisionsets[i].params; " +
-"       } " +
-"     } " +
-"     return []; " +
-" } " +
-"}; ";
+"}; " +
+"window.freeabParticipant.getParamsForExperiment = function(experimentName) { " +
+"    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
+"      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
+"        return window.freeabData.decisionsets[i].params; " +
+"      } " +
+"    } " +
+"    return []; " +
+"}; " +
+"for (var i=0; i < window.freeabParticipantListeners.length; i++) { " +
+"  window.freeabParticipantListeners[i](); " +
+"}"
+;
