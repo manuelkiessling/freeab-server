@@ -5,6 +5,8 @@
   var dbConnectionPool = require('./dbConnectionPool');
   var backend = require('./backend');
   var crypto = require('crypto');
+  var cluster = require('cluster');
+  var util = require('util');
 
   var port;
   if (env === 'staging') {
@@ -20,10 +22,21 @@
     return crypto.createHash('sha256').update(rand).digest('hex');
   };
 
-  var server = backend.init(dbConnectionPool, port, generateHash);
+  var numCPUs = require('os').cpus().length;
 
-  server.listen(function () {
-    console.dir(server.server.router.routes);
-    console.log('Listening on port ', port);
-  });
+  if (cluster.isMaster) {
+    for (var i = 0; i < numCPUs; i++) {
+      cluster.fork();
+    }
+    cluster.on('exit', function(worker, code, signal) {
+      util.log('worker ' + worker.process.pid + ' died');
+    });
+  } else {
+    var server = backend.init(dbConnectionPool, port, generateHash);
+    server.listen(function() {
+      console.dir(server.server.router.routes);
+      console.log('Listening on port ', port);
+    });
+  }
+
 })();

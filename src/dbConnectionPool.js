@@ -36,7 +36,7 @@
       });
     },
     returnToHead: false,
-    max: 90,
+    max: 10, // Caution: Due to the cluster setup, the DB must allow max * numCPUs connections!
     idleTimeoutMillis: 30000,
     log: false
   });
