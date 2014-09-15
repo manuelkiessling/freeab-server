@@ -139,12 +139,20 @@
                     var experimentId = dbConnection.getLastInsertId();
 
                     var variationInsertFunctions = [];
+                    var sumOfVariationWeights = 0;
+
+                    if (obj.variations.length < 2) {
+                      dbConnectionPool.release(dbConnection);
+                      return res.status.badRequest('An experiment needs at least 2 variations');
+                    }
+
                     for (var i=0; i < obj.variations.length; i++) {
                       var variationData = {
                         'experiment_id': experimentId,
                         'name': obj.variations[i].name,
                         'weight': obj.variations[i].weight,
                       };
+                      sumOfVariationWeights = sumOfVariationWeights + obj.variations[i].weight;
                       var params = obj.variations[i].params;
                       variationInsertFunctions.push(
                         function(variationData, params, callback) {
@@ -187,6 +195,11 @@
                           });
                         }.bind(this, variationData, params)
                       );
+                    }
+
+                    if (sumOfVariationWeights != 100.0) {
+                      dbConnectionPool.release(dbConnection);
+                      return res.status.badRequest('The sum of the variation weights must be 100.0');
                     }
 
                     async.parallel(variationInsertFunctions, function(err, results) {
