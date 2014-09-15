@@ -140,15 +140,7 @@
                   'participantHash': hash
                 };
                 dbConnectionPool.release(dbConnection);
-                try {
-                  res.object(body).send();
-                } catch (err) {
-                  console.log('******************************');
-                  console.dir(err);
-                  console.log(err.stack);
-                  //console.dir(res);
-                  //process.exit();
-                }
+                res.object(body).send();
               });
             }
           });
@@ -168,11 +160,8 @@
               return res.status.internalServerError();
             }
             var hash = req.uri.parent().child();
-            util.log('Handling GET /participants/' + hash + '/decisionsets');
 
-            util.log('Start querying participant id');
             dbConnection.fetchOne('SELECT id FROM participant WHERE hash = ?', [hash], function (err, participantId) {
-              util.log('Done querying participant id');
               if (err) {
                 util.error(err);
                 return res.status.internalServerError();
@@ -182,10 +171,7 @@
                 return res.status.notFound('A participant with hash ' + hash + ' does not exist');
               }
 
-              util.log('Start mapping participant where due');
               mapParticipantWhereDue(dbConnection, participantId, function () {
-                util.log('Done mapping participant where due');
-                util.log('Start querying mapped variations');
                 dbConnection.fetchAll(
                   ' SELECT experiment.name, variation_id' +
                   ' FROM participant_experiment_variation' +
@@ -195,7 +181,6 @@
                   '  AND variation_id IS NOT NULL',
                   [participantId],
                   function (err, results) {
-                    util.log('Done querying mapped variations');
                     if (err) {
                       util.error(err);
                       return res.status.internalServerError();
@@ -204,9 +189,7 @@
                     for (var i = 0; i < results.length; i++) {
                       paramSelectFunctions.push(
                         function (variationId, experimentName, callback) {
-                          util.log('Start querying params for variation');
                           dbConnection.fetchAll('SELECT name, value FROM param WHERE variation_id = ?', [variationId], function (err, results) {
-                            util.log('Done querying params for variation');
                             if (err) {
                               util.error(err);
                               callback(err);
@@ -296,20 +279,33 @@
   var mapParticipantToExperiment = function(dbConnection, participantId, experimentId, callback) {
 
     var writeMapping = function(participantId, experimentId, variationId, callback) {
-      dbConnection.insert(
-        'participant_experiment_variation',
-        {
-          'participant_id': participantId,
-          'experiment_id': experimentId,
-          'variation_id': variationId
-        },
-        function(err) {
-          if (err) {
-            util.error(err);
+      try {
+        dbConnection.insert(
+          'participant_experiment_variation',
+          {
+            'participant_id': participantId,
+            'experiment_id': experimentId,
+            'variation_id': variationId
+          },
+          function (err) {
+            if (err) {
+              if (err.code === 'ER_DUP_ENTRY') {
+                util.log(
+                  'The following message is not critical. It occurs if ' +
+                  'for a participant more than one experiment mapping occured in parallel.');
+                util.log(err);
+                err = null;
+              } else {
+                util.error(err);
+              }
+            }
+            callback(err);
           }
-          callback(err);
-        }
-      );
+        );
+      } catch (err) {
+
+        callback(null);
+      }
     };
 
     dbConnection.fetchRow('SELECT * FROM experiment WHERE id = ?', [experimentId], function(err, result) {
