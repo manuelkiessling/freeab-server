@@ -23,11 +23,12 @@
       {
         GET: function(req, res) {
 
+          var cookies = new Cookies(req, res);
+
           async.waterfall(
             [
 
               function(callback) {
-                var cookies = new Cookies(req, res);
                 var participantHash = cookies.get('freeab_participantHash');
                 if (!participantHash) {
                   request.post(
@@ -40,7 +41,6 @@
                         util.error(err);
                         callback(err);
                       }
-                      cookies.set('freeab_participantHash', body.participantHash);
                       callback(null, body.participantHash);
                     }
                   );
@@ -50,6 +50,9 @@
               },
 
               function(participantHash, callback) {
+                var targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() + 30);
+                cookies.set('freeab_participantHash', participantHash, { 'expires': targetDate });
                 request.get(
                   {
                     'url': 'http://localhost:' + port + '/api/participants/' +  participantHash,
