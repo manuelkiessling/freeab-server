@@ -175,7 +175,7 @@
     );
 
     server.route(
-      '/participants/:hash/decisionsets',
+      '/participants/:hash',
 
       {
         GET: function (req, res) {
@@ -184,7 +184,7 @@
               util.error(err);
               return res.status.internalServerError();
             }
-            var hash = req.uri.parent().child();
+            var hash = req.uri.child();
 
             dbConnection.fetchOne('SELECT id FROM participant WHERE hash = ?', [hash], function (err, participantId) {
               if (err) {
