@@ -19,14 +19,14 @@ chown nobody:nogroup /var/log/freeab-server.production.error.log
 sudo -u nobody \
     FOREVER_ROOT=/var/tmp \
     /opt/freeab/production/server/node_modules/.bin/forever \
+    stop freeab-server-production
+
+sudo -u nobody \
+    FOREVER_ROOT=/var/tmp \
+    /opt/freeab/production/server/node_modules/.bin/forever \
     -a \
     -l /var/log/freeab-server.production.forever.log \
     -o /var/log/freeab-server.production.info.log \
     -e /var/log/freeab-server.production.error.log \
     --uid "freeab-server-production" \
     start /opt/freeab/production/server/src/index.js production
-
-sudo -u nobody \
-    FOREVER_ROOT=/var/tmp \
-    /opt/freeab/production/server/node_modules/.bin/forever \
-    restart freeab-server-production
