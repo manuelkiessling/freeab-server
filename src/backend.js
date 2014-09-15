@@ -158,6 +158,14 @@
                     var sumOfVariationWeights = 0;
 
                     for (var i=0; i < obj.variations.length; i++) {
+                      if (obj.variations[i].params === undefined) {
+                        dbConnectionPool.release(dbConnection);
+                        return res.status.badRequest('Variation "' + obj.variations[i].name + '" does not have params');
+                      }
+                      if (obj.variations[i].params.length === 0) {
+                        dbConnectionPool.release(dbConnection);
+                        return res.status.badRequest('Variation "' + obj.variations[i].name + '" has empty params');
+                      }
                       var variationData = {
                         'experiment_id': experimentId,
                         'name': obj.variations[i].name,
@@ -177,6 +185,10 @@
 
                             var paramInsertFunctions = [];
                             for (var i=0; i < params.length; i++) {
+                              if (params[i].name === undefined || params[i].value === undefined ) {
+                                dbConnectionPool.release(dbConnection);
+                                return res.status.badRequest('Variation "' + variationData.name + '" has params without name/value');
+                              }
                               var paramData = {
                                 'variation_id': variationId,
                                 'name': params[i].name,

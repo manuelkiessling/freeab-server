@@ -366,5 +366,138 @@
 
     });
 
+    it('should not allow to add an experiment with a variation without params', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('Variation "Group B" does not have params');
+          done(err);
+        }
+      );
+
+    });
+
+    it('should not allow to add an experiment with a variation without empty params', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params': []
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('Variation "Group B" has empty params');
+          done(err);
+        }
+      );
+
+    });
+
+    it('should not allow to add an experiment with a variation with params without name/value', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 70.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 30.0,
+            'params': [
+              {
+                '_name': 'foo',
+                '_value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          expect(res.statusCode).toBe(400);
+          expect(body.error.message).toEqual('Bad Request');
+          expect(body.error.detail).toEqual('Variation "Group B" has params without name/value');
+          done(err);
+        }
+      );
+
+    });
+
   });
 })();
