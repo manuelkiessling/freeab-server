@@ -13,6 +13,19 @@
       '/experiments',
 
       {
+        authenticate: function(req, res, callback) {
+          var apiKey = req.headers['x-api-key'];
+          dbConnectionPool.acquire(function(err, dbConnection) {
+            dbConnection.fetchOne('SELECT COUNT(id) AS cnt FROM apikey WHERE apikey = ?', [apiKey], function(err, cnt) {
+              if (cnt === 1) {
+                callback(false, apiKey);
+              } else {
+                callback(true);
+              }
+            });
+          });
+        },
+
         POST: function(req, res) {
 
           req.onJson(function(err, obj) {

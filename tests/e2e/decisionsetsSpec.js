@@ -96,7 +96,10 @@
                     }
                   ]
                 },
-                'json': true
+                'json': true,
+                'headers': {
+                  'x-api-key': 'abcd'
+                }
               },
               function (err, res, body) {
                 callback(err);
@@ -133,7 +136,10 @@
                     }
                   ]
                 },
-                'json': true
+                'json': true,
+                'headers': {
+                  'x-api-key': 'abcd'
+                }
               },
               function (err, res, body) {
                 callback(err);

@@ -55,7 +55,10 @@
         {
           'url': 'http://localhost:8888/experiments/',
           'body': bodyData,
-          'json': true
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
         },
         function (err, res, body) {
           expect(res.statusCode).toBe(200);
@@ -100,14 +103,20 @@
         {
           'url': 'http://localhost:8888/experiments/',
           'body': bodyData,
-          'json': true
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
         },
         function (err, res, body) {
           request.post(
             {
               'url': 'http://localhost:8888/experiments/',
               'body': bodyData,
-              'json': true
+              'json': true,
+              'headers': {
+                'x-api-key': 'abcd'
+              }
             },
             function (err, res, body) {
               expect(res.statusCode).toBe(400);

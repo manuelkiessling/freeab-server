@@ -9,94 +9,106 @@
   var resetDatabase = function (callback) {
     var dbWrapper;
 
-    if (dbOptions.driver === 'sqlite3') {
+    async.series(
+      [
+        function (callback) {
+          dbConnectionPool.acquire(function (err, dbConnection) {
+            dbWrapper = dbConnection;
+            callback(err);
+          });
+        },
 
-      async.series(
-        [
-          function (callback) {
-            dbConnectionPool.acquire(function (err, dbConnection) {
-              dbWrapper = dbConnection;
-              callback(err);
-            });
-          },
-          function (callback) {
-            dbWrapper.remove('experiment', '1', function (err) {
-              callback(err);
-            });
-          },
-          function (callback) {
-            dbWrapper.remove('participant', '1', function (err) {
-              callback(err);
-            });
-          },
-          function (callback) {
-            dbWrapper.remove('variation', '1', function (err) {
-              callback(err);
-            });
-          },
-          function (callback) {
-            dbWrapper.remove('param', '1', function (err) {
-              callback(err);
-            });
-          },
-          function (callback) {
-            dbWrapper.remove('participant_experiment_variation', '1', function (err) {
-              callback(err, null);
-            });
-          },
-          function (callback) {
-            dbWrapper.remove('sqlite_sequence', '1', function (err) {
-              callback(err, null);
-            });
+        function(callback) {
+          if (dbOptions.driver === 'sqlite3') {
+
+            async.series(
+              [
+                function (callback) {
+                  dbWrapper.remove('experiment', '1', function (err) {
+                    callback(err);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.remove('participant', '1', function (err) {
+                    callback(err);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.remove('variation', '1', function (err) {
+                    callback(err);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.remove('param', '1', function (err) {
+                    callback(err);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.remove('participant_experiment_variation', '1', function (err) {
+                    callback(err, null);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.remove('sqlite_sequence', '1', function (err) {
+                    callback(err, null);
+                  });
+                }
+              ],
+              function (err, results) {
+                callback(err);
+              }
+            );
+
+          } else if (dbOptions.driver === 'mysql') {
+
+            async.series(
+              [
+                function (callback) {
+                  dbWrapper.fetchOne('TRUNCATE experiment', [], function (err, result) {
+                    callback(err, null);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.fetchOne('TRUNCATE participant', [], function (err, result) {
+                    callback(err, null);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.fetchOne('TRUNCATE variation', [], function (err, result) {
+                    callback(err, null);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.fetchOne('TRUNCATE param', [], function (err, result) {
+                    callback(err, null);
+                  });
+                },
+                function (callback) {
+                  dbWrapper.fetchOne('TRUNCATE participant_experiment_variation', [], function (err, result) {
+                    callback(err, null);
+                  });
+                }
+              ],
+              function (err, results) {
+                callback(err);
+              }
+            );
+
           }
-        ],
-        function (err, results) {
-          callback(err);
+        },
+
+        function (callback) {
+          dbWrapper.insert('apikey', { 'apikey': 'abcd' }, function (err) {
+            callback(err, null);
+          });
         }
-      );
 
-    } else if (dbOptions.driver === 'mysql') {
+      ],
+      function (err, results) {
+        callback(err);
+      }
 
-      async.series(
-        [
-          function (callback) {
-            dbConnectionPool.acquire(function (err, dbConnection) {
-              dbWrapper = dbConnection;
-              callback(err);
-            });
-          },
-          function (callback) {
-            dbWrapper.fetchOne('TRUNCATE experiment', [], function (err, result) {
-              callback(err, null);
-            });
-          },
-          function (callback) {
-            dbWrapper.fetchOne('TRUNCATE participant', [], function (err, result) {
-              callback(err, null);
-            });
-          },
-          function (callback) {
-            dbWrapper.fetchOne('TRUNCATE variation', [], function (err, result) {
-              callback(err, null);
-            });
-          },
-          function (callback) {
-            dbWrapper.fetchOne('TRUNCATE param', [], function (err, result) {
-              callback(err, null);
-            });
-          },
-          function (callback) {
-            dbWrapper.fetchOne('TRUNCATE participant_experiment_variation', [], function (err, result) {
-              callback(err, null);
-            });
-          }
-        ],
-        function (err, results) {
-          callback(err);
-        }
-      );
-
-    }
+    );
   }
 
   module.exports = resetDatabase;
