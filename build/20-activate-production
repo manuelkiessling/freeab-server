@@ -12,9 +12,9 @@ cd /opt/freeab/production/server
 touch /var/log/freeab-server.production.forever.log
 chown nobody:nogroup /var/log/freeab-server.production.forever.log
 touch /var/log/freeab-server.production.info.log
-chown nobody:nogroup /var/log/freeab-server.production.forever.log
+chown nobody:nogroup /var/log/freeab-server.production.info.log
 touch /var/log/freeab-server.production.error.log
-chown nobody:nogroup /var/log/freeab-server.production.forever.log
+chown nobody:nogroup /var/log/freeab-server.production.error.log
 
 sudo -u nobody \
     FOREVER_ROOT=/var/tmp \
