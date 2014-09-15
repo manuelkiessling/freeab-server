@@ -200,10 +200,12 @@
 
               mapParticipantWhereDue(dbConnection, participantId, function () {
                 dbConnection.fetchAll(
-                  ' SELECT experiment.name, variation_id' +
+                  ' SELECT experiment.name, variation_id, variation.name AS vn' +
                   ' FROM participant_experiment_variation' +
                   '  INNER JOIN experiment' +
                   '   ON (experiment.id = participant_experiment_variation.experiment_id)' +
+                  '  INNER JOIN variation' +
+                  '   ON (variation.id = participant_experiment_variation.variation_id)' +
                   ' WHERE participant_id = ?' +
                   '  AND variation_id IS NOT NULL',
                   [participantId],
@@ -216,7 +218,7 @@
                     var paramSelectFunctions = []
                     for (var i = 0; i < results.length; i++) {
                       paramSelectFunctions.push(
-                        function (variationId, experimentName, callback) {
+                        function (variationId, variationName, experimentName, callback) {
                           dbConnection.fetchAll('SELECT name, value FROM param WHERE variation_id = ?', [variationId], function (err, results) {
                             if (err) {
                               util.error(err);
@@ -228,11 +230,12 @@
                               }
                               callback(null, {
                                 'experimentName': experimentName,
+                                'variationName': variationName,
                                 'params': params
                               });
                             }
                           });
-                        }.bind(this, results[i].variation_id, results[i].name)
+                        }.bind(this, results[i].variation_id, results[i].vn, results[i].name)
                       );
                     }
 
@@ -242,9 +245,21 @@
                         dbConnectionPool.release(dbConnection);
                         return res.status.internalServerError();
                       } else {
+                        var trackingidentifiers = [];
+                        for (var i=0; i < results.length; i++) {
+                          trackingidentifiers.push(
+                            (
+                              'freeab_'
+                              + encodeURIComponent(results[i].experimentName.replace(' ',  '-', 'gi'))
+                              + '_'
+                              + encodeURIComponent(results[i].variationName.replace(' ',  '-', 'gi'))
+                            ).toLowerCase()
+                          );
+                        }
                         var body = {
                           'status': 'success',
-                          'decisionsets': results
+                          'decisionsets': results,
+                          'trackingidentifiers': trackingidentifiers
                         };
                         dbConnectionPool.release(dbConnection);
                         res.object(body).send();

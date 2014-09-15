@@ -190,6 +190,9 @@
                 expect(body.decisionsets.length).toEqual(2);
                 expect(body.decisionsets[0].params['ex-one-name']).toEqual('ex-one-a-value');
                 expect(body.decisionsets[1].params['ex-two-name']).toEqual('ex-two-b-value');
+                expect(body.trackingidentifiers.length).toEqual(2);
+                expect(body.trackingidentifiers[0]).toEqual('freeab_experiment-one_group-a');
+                expect(body.trackingidentifiers[1]).toEqual('freeab_experiment-two_group-b');
                 callback(err);
               }
             );
