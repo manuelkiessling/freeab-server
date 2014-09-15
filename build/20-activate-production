@@ -1,0 +1,32 @@
+#!/bin/bash
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:$PATH
+
+mkdir -p /opt/freeab/production/server || exit 1
+
+rsync -avc /opt/freeab/staging/server/ /opt/freeab/production/server/
+
+cd /opt/freeab/production/server
+./node_modules/.bin/db-migrate up -e production || exit 1
+
+touch /var/log/freeab-server.production.forever.log
+chown nobody:nogroup /var/log/freeab-server.production.forever.log
+touch /var/log/freeab-server.production.info.log
+chown nobody:nogroup /var/log/freeab-server.production.forever.log
+touch /var/log/freeab-server.production.error.log
+chown nobody:nogroup /var/log/freeab-server.production.forever.log
+
+sudo -u nobody \
+    FOREVER_ROOT=/var/tmp \
+    /opt/freeab/production/server/node_modules/.bin/forever \
+    -a \
+    -l /var/log/freeab-server.production.forever.log \
+    -o /var/log/freeab-server.production.info.log \
+    -e /var/log/freeab-server.production.error.log \
+    --uid "freeab-server-production" \
+    start /opt/freeab/production/server/src/index.js production
+
+sudo -u nobody \
+    FOREVER_ROOT=/var/tmp \
+    /opt/freeab/production/server/node_modules/.bin/forever \
+    restart freeab-server-production
