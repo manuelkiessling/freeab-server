@@ -36,8 +36,7 @@ exports.up = function(db, callback) {
 exports.down = function(db, callback) {
   async.series(
     [
-      db.dropTable.bind(db, 'param_value'),
-      db.dropTable.bind(db, 'param_name'),
+      db.dropTable.bind(db, 'param'),
       db.dropTable.bind(db, 'variation'),
       db.dropTable.bind(db, 'experiment')
     ], callback);
