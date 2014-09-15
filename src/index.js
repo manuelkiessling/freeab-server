@@ -32,7 +32,7 @@
       util.log('worker ' + worker.process.pid + ' died');
     });
   } else {
-    var server = backend.init(dbConnectionPool, port, generateHash);
+    var server = backend.init(dbConnectionPool, port, '/opt/freeab/' + env + '/js-client/', generateHash);
     server.listen(function() {
       console.dir(server.server.router.routes);
       console.log('Listening on port ', port);

@@ -4,13 +4,85 @@
   var util = require('util');
   var async = require('async');
   var Percolator = require('percolator').Percolator;
+  var Cookies = require('cookies');
+  var request = require('request');
+  var async = require('async');
 
-  var init = function(dbConnectionPool, port, generateHash) {
+  var clientJsTemplate = require('./client.js.template');
 
-    var server = Percolator({'port': port});
+  var init = function(dbConnectionPool, port, staticDir, generateHash) {
+
+    var server = Percolator({
+      'port': port,
+    });
 
     server.route(
-      '/experiments',
+      '/client.js',
+
+      {
+        GET: function(req, res) {
+
+          async.waterfall(
+            [
+
+              function(callback) {
+                var cookies = new Cookies(req, res);
+                var participantHash = cookies.get('freeab_participantHash');
+                if (!participantHash) {
+                  request.post(
+                    {
+                      'url': 'http://localhost:' + port + '/api/participants/',
+                      'json': true
+                    },
+                    function(err, postRes, body) {
+                      if (err) {
+                        util.error(err);
+                        callback(err);
+                      }
+                      cookies.set('freeab_participantHash', body.participantHash);
+                      callback(null, body.participantHash);
+                    }
+                  );
+                } else {
+                  callback(null, participantHash);
+                }
+              },
+
+              function(participantHash, callback) {
+                request.get(
+                  {
+                    'url': 'http://localhost:' + port + '/api/participants/' +  participantHash,
+                    'json': false
+                  },
+                  function(err, getRes, body) {
+                    if (err) {
+                      util.error(err);
+                      callback(err);
+                    }
+                    var template = clientJsTemplate;
+                    template = template.replace('<PLACEHOLDER/>',  body, 'gi');
+                    res.end(template);
+                    callback(null);
+                  }
+                );
+              }
+
+            ],
+
+            function(err, result) {
+              if (err) {
+                return res.status.internalServerError();
+              }
+            }
+          );
+
+        }
+      }
+    )
+
+
+    server.route(
+      '/api/experiments',
 
       {
         authenticate: function(req, res, callback) {
@@ -141,7 +213,7 @@
     );
 
     server.route(
-      '/participants',
+      '/api/participants',
 
       {
         POST: function (req, res) {
@@ -175,7 +247,7 @@
     );
 
     server.route(
-      '/participants/:hash',
+      '/api/participants/:hash',
 
       {
         GET: function (req, res) {

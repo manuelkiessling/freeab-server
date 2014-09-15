@@ -1,0 +1,24 @@
+'use strict';
+
+module.exports =
+"var data = <PLACEHOLDER/>; " +
+"var trackingidentifiers = data.trackingidentifiers; " +
+"var decisionsets = data.decisionsets; " +
+"window.freeabParticipant = { " +
+" 'isPartOfExperiment': function(experimentName) { " +
+"    for (var i=0; i < decisionsets.length; i++) { " +
+"      if (decisionsets[i].experimentName == experimentName) { " +
+"        return true; " +
+"      } " +
+"    } " +
+"    return false; " +
+" }, " +
+" 'getParamsForExperiment': function(experimentName) { " +
+"    for (var i=0; i < decisionsets.length; i++) { " +
+"       if (decisionsets[i].experimentName == experimentName) { " +
+"         return decisionsets[i].params; " +
+"       } " +
+"     } " +
+"     return []; " +
+" } " +
+"}; ";

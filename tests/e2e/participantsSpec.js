@@ -12,7 +12,7 @@
     return theHash;
   };
 
-  var server = backend.init(dbConnectionPool, 8888, generateHash);
+  var server = backend.init(dbConnectionPool, 8888, null, generateHash);
 
   describe('The participants API', function () {
 
@@ -36,7 +36,7 @@
 
       request.post(
         {
-          'url': 'http://localhost:8888/participants/',
+          'url': 'http://localhost:8888/api/participants/',
           'json': true
         },
         function (err, res, body) {
@@ -55,14 +55,14 @@
 
       request.post(
         {
-          'url': 'http://localhost:8888/participants/',
+          'url': 'http://localhost:8888/api/participants/',
           'json': true
         },
         function (err, res, body) {
 
           request.get(
             {
-              'url': 'http://localhost:8888/participants/1',
+              'url': 'http://localhost:8888/api/participants/1',
               'json': true
             },
             function (err, res, body) {
@@ -88,7 +88,7 @@
           function (callback) {
             request.post(
               {
-                'url': 'http://localhost:8888/experiments/',
+                'url': 'http://localhost:8888/api/experiments/',
                 'body': {
                   'name': 'Experiment One',
                   'scope': 100.0,
@@ -128,7 +128,7 @@
           function (callback) {
             request.post(
               {
-                'url': 'http://localhost:8888/experiments/',
+                'url': 'http://localhost:8888/api/experiments/',
                 'body': {
                   'name': 'Experiment Two',
                   'scope': 100.0,
@@ -166,11 +166,51 @@
           },
 
           function (callback) {
+            request.post(
+              {
+                'url': 'http://localhost:8888/api/experiments/',
+                'body': {
+                  'name': 'Experiment Three',
+                  'scope': 0.0,
+                  'variations': [
+                    {
+                      'name': 'Group A',
+                      'weight': 100.0,
+                      'params': [
+                        {
+                          'name': 'ex-three-name',
+                          'value': 'ex-three-a-value'
+                        }
+                      ]
+                    },
+                    {
+                      'name': 'Group B',
+                      'weight': 0.0,
+                      'params': [
+                        {
+                          'name': 'ex-three-name',
+                          'value': 'ex-three-b-value'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                'json': true,
+                'headers': {
+                  'x-api-key': 'abcd'
+                }
+              },
+              function (err, res, body) {
+                callback(err);
+              });
+          },
+
+          function (callback) {
             theHash = 1;
 
             request.post(
               {
-                'url': 'http://localhost:8888/participants/',
+                'url': 'http://localhost:8888/api/participants/',
                 'json': true
               },
               function (err, res, body) {
@@ -181,7 +221,7 @@
           function (callback) {
             request.get(
               {
-                'url': 'http://localhost:8888/participants/1',
+                'url': 'http://localhost:8888/api/participants/1',
                 'json': true
               },
               function (err, res, body) {

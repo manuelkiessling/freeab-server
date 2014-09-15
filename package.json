@@ -6,16 +6,17 @@
   "main": "index.js",
   "dependencies": {
     "async": "^0.9.0",
+    "cookies": "^0.5.0",
     "db-migrate": "^0.7.1",
     "forever": "^0.11.1",
     "generic-pool": "^2.1.1",
     "mysql": "^2.5.0",
     "node-dbi": "^0.7.1",
-    "percolator": "git://github.com/cainus/percolator.git#2305f0129c362e5bbdea7bc138d5640dab6377dd"
+    "percolator": "git://github.com/cainus/percolator.git#2305f0129c362e5bbdea7bc138d5640dab6377dd",
+    "request": "^2.42.0"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",
-    "request": "^2.42.0",
     "sqlite3": "^2.2.7"
   },
   "scripts": {

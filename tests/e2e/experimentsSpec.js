@@ -12,7 +12,7 @@
     return theHash;
   };
 
-  var server = backend.init(dbConnectionPool, 8888, generateHash);
+  var server = backend.init(dbConnectionPool, 8888, null, generateHash);
 
   describe('The experiments API', function () {
 
@@ -53,7 +53,7 @@
 
       request.post(
         {
-          'url': 'http://localhost:8888/experiments/',
+          'url': 'http://localhost:8888/api/experiments/',
           'body': bodyData,
           'json': true,
           'headers': {
@@ -101,7 +101,7 @@
 
       request.post(
         {
-          'url': 'http://localhost:8888/experiments/',
+          'url': 'http://localhost:8888/api/experiments/',
           'body': bodyData,
           'json': true,
           'headers': {
@@ -111,7 +111,7 @@
         function (err, res, body) {
           request.post(
             {
-              'url': 'http://localhost:8888/experiments/',
+              'url': 'http://localhost:8888/api/experiments/',
               'body': bodyData,
               'json': true,
               'headers': {
