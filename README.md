@@ -167,6 +167,7 @@ simply request decisionsets.
         {
           "experimentName": "Checkout page buttons",
           "variationName": "Group B",
+          "variationId": 23,
           "params": {
             "button-color": "#ff99ee",
             "show-note": false,
@@ -176,14 +177,21 @@ simply request decisionsets.
         {
           "experimentName": "Homepage Test 2014-09",
           "variationName": "Group A",
+          "variationId": 94,
           "params": {
             "teaser-id": "hfuz734"
           }
         }
-      ]
+      ],
       "trackingidentifiers":
       [
-        "freeab_checkout-page-buttons_group-b"
+        "freeab_checkout-page-buttons_group-b",
+        "freeab_homepage-test-2014-09_group-a"
+      ],
+      "variationidentifiers":
+      [
+        23,
+        94
       ]
     }
 
@@ -227,7 +235,7 @@ Put the freeab JS into your page, before the closing head tag:
     window.freeabParticipant.on = function(event, callback) {
       window.freeabParticipantListeners.push(callback);
     };
-    document.write('<scr' + 'ipt async src="http://' + freeabServerAddress + '/client.js"><\/sc' + 'ript>');
+    document.write('<scr' + 'ipt async src="' + freeabServerAddress + '/client.js"><\/sc' + 'ript>');
     </script>
 
 Now you can manipulate your DOM like this:
