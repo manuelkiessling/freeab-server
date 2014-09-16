@@ -333,8 +333,10 @@
                       dbConnectionPool.release(dbConnection);
                       return res.status.internalServerError();
                     }
+                    var variationidentifiers = [];
                     var paramSelectFunctions = []
                     for (var i = 0; i < results.length; i++) {
+                      variationidentifiers.push(results[i].variation_id);
                       paramSelectFunctions.push(
                         function (variationId, variationName, experimentName, callback) {
                           dbConnection.fetchAll('SELECT name, value FROM param WHERE variation_id = ?', [variationId], function (err, results) {
@@ -349,6 +351,7 @@
                               callback(null, {
                                 'experimentName': experimentName,
                                 'variationName': variationName,
+                                'variationId': variationId,
                                 'params': params
                               });
                             }
@@ -377,7 +380,8 @@
                         var body = {
                           'status': 'success',
                           'decisionsets': results,
-                          'trackingidentifiers': trackingidentifiers
+                          'trackingidentifiers': trackingidentifiers,
+                          'variationidentifiers': variationidentifiers
                         };
                         dbConnectionPool.release(dbConnection);
                         res.object(body).send();

@@ -3,6 +3,7 @@
 module.exports =
 "window.freeabData = <PLACEHOLDER/>; " +
 "window.freeabParticipant.trackingidentifiers = window.freeabData.trackingidentifiers; " +
+"window.freeabParticipant.variationidentifiers = window.freeabData.variationidentifiers; " +
 "window.freeabParticipant.isPartOfExperiment = function(experimentName) { " +
 "    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
 "      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
@@ -15,6 +16,14 @@ module.exports =
 "    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
 "      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
 "        return window.freeabData.decisionsets[i].params; " +
+"      } " +
+"    } " +
+"    return []; " +
+"}; " +
+"window.freeabParticipant.getVariationIdForExperiment = function(experimentName) { " +
+"    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
+"      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
+"        return window.freeabData.decisionsets[i].variationId; " +
 "      } " +
 "    } " +
 "    return []; " +

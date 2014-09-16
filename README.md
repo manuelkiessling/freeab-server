@@ -215,7 +215,7 @@ react to this, either in your frontend, your backend, or both.
 
 ## In the browser
 
-Put the freeab JS into your page, before the opening body tag:
+Put the freeab JS into your page, before the closing head tag:
 
     <script>
     /* Change this according to your needs */
