@@ -1,12 +1,66 @@
-# Create new experiment
+# freeab Server
 
-## Request
+A Multivariate A/B Testing System - server component.
+
+## About
+
+*freeab* allows you to set up a server system which can be used to create experiments that consist of weighted
+participant groups which in turn carry different parameter sets. Using the integrated JavaScript client, website
+visitors can be sorted into experiment groups according to group weight, and DOM manipulations can be performed using
+the parameter set of the group the website visitor has been sorted into.
+
+
+## Usage
+
+What you receive from the server is all the information that is needed to alter your UI or process for a specific
+website visitor.
+
+If the visitor has not been mapped into any experiments, you simply do nothing. If he/she has been mapped, you can
+react to this, either in your frontend, your backend, or both.
+
+### In the browser
+
+Put the freeab JS into your page, before the closing head tag:
+
+    <script>
+    /* Change this according to your needs */
+    var freeabServerAddress = 'http://freeab.example.com';
+
+    /* Do not change code below this line */
+    window.freeabParticipant = {};
+    window.freeabParticipantListeners = [];
+    window.freeabParticipant.on = function(event, callback) {
+      window.freeabParticipantListeners.push(callback);
+    };
+    document.write('<scr' + 'ipt async src="' + freeabServerAddress + '/client.js"><\/sc' + 'ript>');
+    </script>
+
+This enables you to manipulate your DOM, e.g. like this:
+
+    window.freeabParticipant.on('ready', function() {
+      if (window.freeabParticipant.isPartOfExperiment('My fine experiment')) {
+        var params = window.freeabParticipant.getParamsForExperiment('My fine experiment');
+        document.getElementById('foo').textContent = params['text'];
+      }
+    });
+
+### In your backend
+
+Clients for backend systems will be added future. You can also use the `GET /participants/:participantHash` API request
+directly - see below for details.
+
+
+## Webservice API
+
+### Create new experiment
+
+#### Request
 
     POST /experiments/
 
-You must authenticate for this request by adding a 'x-api-key' header with a valid API key.
+You must authenticate for this request by adding an 'x-api-key' header with a valid API key.
 
-## Request body: A multilevel associative array, encoded as JSON
+#### Request body: A multilevel associative array, encoded as JSON
 
     {
       "name": "Checkout page buttons",
@@ -32,21 +86,21 @@ You must authenticate for this request by adding a 'x-api-key' header with a val
     }
 
 
-### name: `string`
+##### name: `string`
 
 Name of experiment. Must be unique.
 
     Checkout page buttons
 
 
-### scope: `float`
+##### scope: `float`
 
 Scope of this experiment - what percentage of all site visitors should participate in this experiment?
 
     50.0
 
 
-### variations: `object`
+##### variations: `object`
 
 An associative array describing each variation within this experiment.
 
@@ -70,14 +124,14 @@ An associative array describing each variation within this experiment.
     }
 
 
-#### Key `string`
+###### Key `string`
 
 The key for a variation is a string.
 
     Group A
 
 
-#### weight: `float`
+###### weight: `float`
 
 What percentage of all experiment participators should be mapped onto this variation?
 The sum of all variation"s weights must be 100.0.
@@ -85,7 +139,7 @@ The sum of all variation"s weights must be 100.0.
     70.0
 
 
-#### params: `object`
+###### params: `object`
 
 An associative array of with whatever key-value pairs you want. These are to be used by your
 backend and/or frontend code to decide what to change in the user experience.
@@ -97,9 +151,9 @@ backend and/or frontend code to decide what to change in the user experience.
     }
 
 
-## Response
+#### Response
 
-### On success:
+##### On success:
 
     {
       "status": "success",
@@ -107,7 +161,7 @@ backend and/or frontend code to decide what to change in the user experience.
     }
 
 
-### On error:
+##### On error:
 
     {
       "error": {
@@ -118,16 +172,16 @@ backend and/or frontend code to decide what to change in the user experience.
     }
 
 
-# Make a new participant known to the freeAB system
+### Make a new participant known to the freeAB system
 
-## Request
+#### Request
 
     POST /participants/
 
 
-## Response
+#### Response
 
-### On success:
+##### On success:
 
     {
       "status": "success",
@@ -135,7 +189,7 @@ backend and/or frontend code to decide what to change in the user experience.
     }
 
 
-### On error:
+##### On error:
 
     {
       "error": {
@@ -150,15 +204,15 @@ the hash as a cookie. Do not create a new identifier for a participant that alre
 simply request decisionsets.
 
 
-# Request experiment data for a known participant
+### Request experiment data for a known participant
 
-## Request
+#### Request
 
-    GET /participants/<participantHash>
+    GET /participants/:participantHash
 
-## Response
+#### Response
 
-### On success, if participant is part of one or more experiments:
+##### On success, if participant is part of one or more experiments:
 
     {
       "status": "success",
@@ -195,7 +249,7 @@ simply request decisionsets.
       ]
     }
 
-### On success, if participant is not part of any experiments:
+##### On success, if participant is not part of any experiments:
 
     {
       "status": "success",
@@ -203,7 +257,7 @@ simply request decisionsets.
     }
 
 
-### On error:
+##### On error:
 
     {
       "error": {
@@ -212,37 +266,3 @@ simply request decisionsets.
         "detail": "Some details"
       }
     }
-
-What you receive here is all the information that is needed to alter your UI or process for this specific participant.
-
-If this participant has not been mapped into any experiments, you simply do nothing. If he/she has been mapped, you can
-react to this, either in your frontend, your backend, or both.
-
-
-# Usage
-
-## In the browser
-
-Put the freeab JS into your page, before the closing head tag:
-
-    <script>
-    /* Change this according to your needs */
-    var freeabServerAddress = 'http://freeab.example.com';
-
-    /* Do not change code below this line */
-    window.freeabParticipant = {};
-    window.freeabParticipantListeners = [];
-    window.freeabParticipant.on = function(event, callback) {
-      window.freeabParticipantListeners.push(callback);
-    };
-    document.write('<scr' + 'ipt async src="' + freeabServerAddress + '/client.js"><\/sc' + 'ript>');
-    </script>
-
-Now you can manipulate your DOM like this:
-
-    window.freeabParticipant.on('ready', function() {
-      if (window.freeabParticipant.isPartOfExperiment('My fine experiment')) {
-        var params = window.freeabParticipant.getParamsForExperiment('My fine experiment');
-        document.getElementById('foo').textContent = params['text'];
-      }
-    });
