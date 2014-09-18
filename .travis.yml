@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+- "0.10"
+
+before_script:
+- ./node_modules/db-migrate/bin/db-migrate up -e test
+- node src/index.js test
+
+script:
+- ./node_modules/.bin/jasmine-node --verbose --captureExceptions --forceexit --config FREEAB_ENV test tests/
