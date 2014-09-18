@@ -2,6 +2,8 @@
 
 A Multivariate A/B Testing System - server component.
 
+[![Build Status](https://travis-ci.org/meinauto/freeab-server.png?branch=master)](https://travis-ci.org/meinauto/freeab-server)
+
 ## About
 
 *freeab* allows you to set up a server system which can be used to create experiments that consist of weighted
