@@ -60,7 +60,15 @@
               function(participantHash, callback) {
                 var targetDate = new Date();
                 targetDate.setDate(targetDate.getDate() + 30);
-                cookies.set('freeab_participantHash', participantHash, { 'expires': targetDate, 'domain': cookieDomain });
+                cookies.set(
+                  'freeab_participantHash',
+                  participantHash,
+                  {
+                    'expires': targetDate,
+                    'domain': cookieDomain,
+                    'httpOnly': false
+                  }
+                );
                 request.get(
                   {
                     'url': 'http://localhost:' + port + '/api/participants/' +  participantHash,
