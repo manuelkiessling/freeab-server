@@ -24,6 +24,7 @@ Put the freeab JS into your page, before the closing head tag:
 
     <script>
     /* Change this according to your needs */
+    var cookieDomain = '.example.com';
     var freeabServerAddress = 'http://freeab.example.com';
 
     /* Do not change code below this line */
@@ -32,7 +33,7 @@ Put the freeab JS into your page, before the closing head tag:
     window.freeabParticipant.on = function(event, callback) {
       window.freeabParticipantListeners.push(callback);
     };
-    document.write('<scr' + 'ipt async src="' + freeabServerAddress + '/client.js"><\/sc' + 'ript>');
+    document.write('<scr' + 'ipt async src="' + freeabServerAddress + '/client.js?cookieDomain=' + cookieDomain + '"><\/sc' + 'ript>');
     </script>
 
 This enables you to manipulate your DOM, e.g. like this:

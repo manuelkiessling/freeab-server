@@ -7,6 +7,8 @@
   var Cookies = require('cookies');
   var request = require('request');
   var async = require('async');
+  var url = require('url');
+  var querystring = require('querystring');
 
   var clientJsTemplate = require('./client.js.template');
 
@@ -24,6 +26,12 @@
         GET: function(req, res) {
 
           var cookies = new Cookies(req, res);
+
+          var query = url.parse(req.url).query;
+          var cookieDomain = querystring.parse(query)['cookieDomain'];
+          if (cookieDomain === undefined) {
+            cookieDomain = '';
+          }
 
           async.waterfall(
             [
@@ -52,7 +60,7 @@
               function(participantHash, callback) {
                 var targetDate = new Date();
                 targetDate.setDate(targetDate.getDate() + 30);
-                cookies.set('freeab_participantHash', participantHash, { 'expires': targetDate });
+                cookies.set('freeab_participantHash', participantHash, { 'expires': targetDate, 'domain': cookieDomain });
                 request.get(
                   {
                     'url': 'http://localhost:' + port + '/api/participants/' +  participantHash,
@@ -64,7 +72,8 @@
                       callback(err);
                     }
                     var template = clientJsTemplate;
-                    template = template.replace('<PLACEHOLDER/>',  body, 'gi');
+                    var bodyObject = JSON.parse(body);
+                    template = template.replace('<PLACEHOLDER/>',  JSON.stringify(bodyObject, null, 2), 'gi');
                     res.end(template);
                     callback(null);
                   }

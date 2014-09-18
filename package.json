@@ -13,7 +13,9 @@
     "mysql": "^2.5.0",
     "node-dbi": "^0.7.1",
     "percolator": "git://github.com/cainus/percolator.git#2305f0129c362e5bbdea7bc138d5640dab6377dd",
-    "request": "^2.42.0"
+    "querystring": "^0.2.0",
+    "request": "^2.42.0",
+    "url": "^0.10.1"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",

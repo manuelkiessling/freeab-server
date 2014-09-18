@@ -1,34 +1,35 @@
 'use strict';
 
 module.exports =
-"window.freeabData = <PLACEHOLDER/>; " +
-"window.freeabParticipant.trackingidentifiers = window.freeabData.trackingidentifiers; " +
-"window.freeabParticipant.variationidentifiers = window.freeabData.variationidentifiers; " +
-"window.freeabParticipant.isPartOfExperiment = function(experimentName) { " +
-"    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
-"      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
-"        return true; " +
-"      } " +
-"    } " +
-"    return false; " +
-"}; " +
-"window.freeabParticipant.getParamsForExperiment = function(experimentName) { " +
-"    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
-"      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
-"        return window.freeabData.decisionsets[i].params; " +
-"      } " +
-"    } " +
-"    return []; " +
-"}; " +
-"window.freeabParticipant.getVariationIdForExperiment = function(experimentName) { " +
-"    for (var i=0; i < window.freeabData.decisionsets.length; i++) { " +
-"      if (window.freeabData.decisionsets[i].experimentName == experimentName) { " +
-"        return window.freeabData.decisionsets[i].variationId; " +
-"      } " +
-"    } " +
-"    return []; " +
-"}; " +
-"for (var i=0; i < window.freeabParticipantListeners.length; i++) { " +
-"  window.freeabParticipantListeners[i](); " +
+"window.freeabData = \n<PLACEHOLDER/>;\n" +
+"\n" +
+"window.freeabParticipant.trackingidentifiers = window.freeabData.trackingidentifiers;\n" +
+"window.freeabParticipant.variationidentifiers = window.freeabData.variationidentifiers;\n" +
+"window.freeabParticipant.isPartOfExperiment = function(experimentName) {\n" +
+"    for (var i=0; i < window.freeabData.decisionsets.length; i++) {\n" +
+"      if (window.freeabData.decisionsets[i].experimentName == experimentName) {\n" +
+"        return true;\n" +
+"      }\n" +
+"    }\n" +
+"    return false;\n" +
+"};\n" +
+"window.freeabParticipant.getParamsForExperiment = function(experimentName) {\n" +
+"    for (var i=0; i < window.freeabData.decisionsets.length; i++) {\n" +
+"      if (window.freeabData.decisionsets[i].experimentName == experimentName) {\n" +
+"        return window.freeabData.decisionsets[i].params;\n" +
+"      }\n" +
+"    }\n" +
+"    return [];\n" +
+"};\n" +
+"window.freeabParticipant.getVariationIdForExperiment = function(experimentName) {\n" +
+"    for (var i=0; i < window.freeabData.decisionsets.length; i++) {\n" +
+"      if (window.freeabData.decisionsets[i].experimentName == experimentName) {\n" +
+"        return window.freeabData.decisionsets[i].variationId;\n" +
+"      }\n" +
+"    }\n" +
+"    return [];\n" +
+"};\n" +
+"for (var i=0; i < window.freeabParticipantListeners.length; i++) {\n" +
+"  window.freeabParticipantListeners[i]();\n" +
 "}"
 ;
