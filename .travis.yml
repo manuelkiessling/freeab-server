@@ -5,7 +5,7 @@ node_js:
 before_script:
 - cp example.database.json database.json
 - ./node_modules/db-migrate/bin/db-migrate up -e test
-- node src/index.js test
+- node src/index.js test &
 
 script:
 - ./node_modules/.bin/jasmine-node --verbose --captureExceptions --forceexit --config FREEAB_ENV test tests/
