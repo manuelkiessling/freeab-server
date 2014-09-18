@@ -3,6 +3,7 @@ node_js:
 - "0.10"
 
 before_script:
+- cp example.database.json database.json
 - ./node_modules/db-migrate/bin/db-migrate up -e test
 - node src/index.js test
 
