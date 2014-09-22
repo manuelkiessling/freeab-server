@@ -335,7 +335,7 @@
 
               mapParticipantWhereDue(dbConnection, participantId, function () {
                 dbConnection.fetchAll(
-                  ' SELECT experiment.name, variation_id, variation.name AS vn' +
+                  ' SELECT experiment.id, experiment.name, variation_id, variation.name AS vn' +
                   ' FROM participant_experiment_variation' +
                   '  INNER JOIN experiment' +
                   '   ON (experiment.id = participant_experiment_variation.experiment_id)' +
@@ -355,7 +355,7 @@
                     for (var i = 0; i < results.length; i++) {
                       variationidentifiers.push(results[i].variation_id);
                       paramSelectFunctions.push(
-                        function (variationId, variationName, experimentName, callback) {
+                        function (variationId, variationName, experimentId, experimentName, callback) {
                           dbConnection.fetchAll('SELECT name, value FROM param WHERE variation_id = ?', [variationId], function (err, results) {
                             if (err) {
                               util.error(err);
@@ -367,13 +367,14 @@
                               }
                               callback(null, {
                                 'experimentName': experimentName,
+                                'experimentId': experimentId,
                                 'variationName': variationName,
                                 'variationId': variationId,
                                 'params': params
                               });
                             }
                           });
-                        }.bind(this, results[i].variation_id, results[i].vn, results[i].name)
+                        }.bind(this, results[i].variation_id, results[i].vn, results[i].id, results[i].name)
                       );
                     }
 

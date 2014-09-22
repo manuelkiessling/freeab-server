@@ -223,6 +223,7 @@ simply request decisionsets.
       [
         {
           "experimentName": "Checkout page buttons",
+          "experimentId": 6,
           "variationName": "Group B",
           "variationId": 23,
           "params": {
@@ -233,6 +234,7 @@ simply request decisionsets.
         },
         {
           "experimentName": "Homepage Test 2014-09",
+          "experimentId": 9,
           "variationName": "Group A",
           "variationId": 94,
           "params": {

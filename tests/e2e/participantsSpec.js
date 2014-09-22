@@ -226,10 +226,12 @@
                 expect(res.statusCode).toBe(200);
                 expect(body.status).toEqual('success');
                 expect(body.decisionsets.length).toEqual(2);
+                expect(body.decisionsets[0].experimentId).toEqual(1);
                 expect(body.decisionsets[0].experimentName).toEqual('Experiment Number One');
                 expect(body.decisionsets[0].variationName).toEqual('Group Number A');
                 expect(body.decisionsets[0].variationId).toEqual(1);
                 expect(body.decisionsets[0].params['ex-one-name']).toEqual('ex-one-a-value');
+                expect(body.decisionsets[1].experimentId).toEqual(2);
                 expect(body.decisionsets[1].experimentName).toEqual('Experiment Number Two');
                 expect(body.decisionsets[1].variationName).toEqual('Group Number B');
                 expect(body.decisionsets[1].variationId).toEqual(4);
