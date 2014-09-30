@@ -25,6 +25,23 @@
       {
         GET: function(req, res) {
 
+          // If failures occur, we pretend that all is fine and deliver an empty yet working client
+          var sendEmptyClient = function(err) {
+            var template = clientJsTemplate;
+            var bodyObject = {
+              'error': {
+                'type': 400,
+                'message': 'Bad request',
+                'detail': err.toString()
+              },
+              'decisionsets': [],
+              'trackingidentifiers': [],
+              'variationidentifiers': []
+            };
+            template = template.replace('<PLACEHOLDER/>',  JSON.stringify(bodyObject, null, 2), 'gi');
+            res.end(template);
+          };
+
           var cookies = new Cookies(req, res);
 
           var query = url.parse(req.url).query;
@@ -47,14 +64,36 @@
                     function(err, postRes, body) {
                       if (err) {
                         util.error(err);
-                        callback(err);
+                        return callback(err);
                       }
-                      callback(null, body.participantHash);
+                      return callback(null, body.participantHash);
                     }
                   );
                 } else {
                   callback(null, participantHash);
                 }
+              },
+
+              // Verify that this participantHash is known
+              function(participantHash, callback) {
+                dbConnectionPool.acquire(function(err, dbConnection) {
+                  if (err) {
+                    util.error(err);
+                    dbConnectionPool.release(dbConnection);
+                    return callback(err);
+                  }
+                  dbConnection.fetchRow('SELECT COUNT(*) AS cnt FROM participant WHERE hash = ?', [participantHash], function(err, result) {
+                    dbConnectionPool.release(dbConnection);
+                    if (err) {
+                      util.error(err);
+                      return callback(err);
+                    }
+                    if (result['cnt'] != 1) {
+                      return callback(new Error('Could not find participant with hash ' + participantHash + ' in database.'));
+                    }
+                    return callback(null, participantHash);
+                  });
+                });
               },
 
               function(participantHash, callback) {
@@ -77,13 +116,13 @@
                   function(err, getRes, body) {
                     if (err) {
                       util.error(err);
-                      callback(err);
+                      return callback(err);
                     }
                     var template = clientJsTemplate;
                     var bodyObject = JSON.parse(body);
                     template = template.replace('<PLACEHOLDER/>',  JSON.stringify(bodyObject, null, 2), 'gi');
                     res.end(template);
-                    callback(null);
+                    return callback(null);
                   }
                 );
               }
@@ -92,7 +131,7 @@
 
             function(err, result) {
               if (err) {
-                return res.status.internalServerError();
+                return sendEmptyClient(err);
               }
             }
           );

@@ -10,16 +10,17 @@
     "db-migrate": "^0.7.1",
     "forever": "^0.11.1",
     "generic-pool": "^2.1.1",
-    "mysql": "^2.5.0",
+    "mysql": "^2.5.1",
     "node-dbi": "^0.7.1",
-    "percolator": "git://github.com/cainus/percolator.git#2305f0129c362e5bbdea7bc138d5640dab6377dd",
     "querystring": "^0.2.0",
-    "request": "^2.42.0",
-    "url": "^0.10.1"
+    "request": "^2.44.0",
+    "url": "^0.10.1",
+    "percolator": "git://github.com/cainus/percolator.git#2305f0129c362e5bbdea7bc138d5640dab6377dd"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",
-    "sqlite3": "^2.2.7"
+    "sqlite3": "^3.0.2",
+    "tough-cookie": "^0.12.1"
   },
   "scripts": {
     "test": "node_modules/.bin/jasmine-node tests/"
