@@ -30,7 +30,7 @@
       });
     });
 
-    it('should return success and empty values if no user hash is given', function (done) {
+    it('should return success and empty values if no participant hash is given and there are no experiments', function (done) {
 
       request.get(
         {
@@ -50,7 +50,7 @@
 
     });
 
-    it('should return an error and empty values if user hash is not known', function (done) {
+    it('should return an error and empty values if given participant hash is not known', function (done) {
 
       var jar = request.jar();
       var cookie = request.cookie('freeab_participantHash=1234567890987654321');
@@ -71,6 +71,71 @@
           expect(body.indexOf('"trackingidentifiers": [],')).toNotBe(-1);
           expect(body.indexOf('"variationidentifiers": []')).toNotBe(-1);
           done(err);
+        }
+      );
+
+    });
+
+    it('should return an error and empty values if given participant hash is not known, even if experiments exist', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 100.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 0.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+          var jar = request.jar();
+          var cookie = request.cookie('freeab_participantHash=1234567890987654321');
+          jar.setCookieSync(cookie, 'http://localhost:8888');
+
+          request.get(
+            {
+              'url': 'http://localhost:8888/client.js?cookieDomain=localhost',
+              'jar': jar,
+              'json': false,
+            },
+            function (err, res, body) {
+              expect(res.statusCode).toBe(200);
+              expect(body.indexOf('"status": "success"')).toBe(-1);
+              expect(body.indexOf('"detail": "Error: Could not find participant with hash 1234567890987654321 in database."')).toNotBe(-1);
+              expect(body.indexOf('"error": {')).toNotBe(-1);
+              expect(body.indexOf('"decisionsets": [],')).toNotBe(-1);
+              expect(body.indexOf('"trackingidentifiers": [],')).toNotBe(-1);
+              expect(body.indexOf('"variationidentifiers": []')).toNotBe(-1);
+              done(err);
+            }
+          );
         }
       );
 
