@@ -138,8 +138,7 @@
 
         }
       }
-    )
-
+    );
 
     server.route(
       '/api/experiments',
