@@ -50,6 +50,79 @@
 
     });
 
+    it('should return success and sensible values if no participant hash is given and there are experiments', function (done) {
+
+      var bodyData = {
+        'name': 'Checkout page buttons',
+        'scope': 100.0,
+        'variations': [
+          {
+            'name': 'Group A',
+            'weight': 100.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'bar'
+              }
+            ]
+          },
+          {
+            'name': 'Group B',
+            'weight': 0.0,
+            'params': [
+              {
+                'name': 'foo',
+                'value': 'baz'
+              }
+            ]
+          }
+        ]
+      };
+
+      request.post(
+        {
+          'url': 'http://localhost:8888/api/experiments/',
+          'body': bodyData,
+          'json': true,
+          'headers': {
+            'x-api-key': 'abcd'
+          }
+        },
+        function (err, res, body) {
+
+          request.get(
+            {
+              'url': 'http://localhost:8888/client.js?cookieDomain=localhost',
+              'json': false,
+            },
+            function (err, res, body) {
+              console.log(body);
+              expect(res.statusCode).toBe(200);
+              expect(body.indexOf('"status": "success"')).toNotBe(-1);
+              expect(body.indexOf('"error": {')).toBe(-1);
+
+              expect(body.indexOf('"decisionsets": [')).toNotBe(-1);
+              expect(body.indexOf('"experimentName": "Checkout page buttons",')).toNotBe(-1);
+              expect(body.indexOf('"experimentId": 1,')).toNotBe(-1);
+              expect(body.indexOf('"variationName": "Group A",')).toNotBe(-1);
+              expect(body.indexOf('"variationId": 1,')).toNotBe(-1);
+              expect(body.indexOf('"params": {')).toNotBe(-1);
+              expect(body.indexOf('"foo": "bar"')).toNotBe(-1);
+
+              expect(body.indexOf('Group B')).toBe(-1);
+
+              expect(body.indexOf('  "trackingidentifiers": [\n    "freeab_checkout-page-buttons_group-a"\n  ],\n')).toNotBe(-1);
+
+              expect(body.indexOf('  "variationidentifiers": [\n    1\n  ]\n')).toNotBe(-1);
+
+              done(err);
+            }
+          );
+
+        });
+
+    });
+
     it('should return an error and empty values if given participant hash is not known', function (done) {
 
       var jar = request.jar();
