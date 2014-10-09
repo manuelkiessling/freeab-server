@@ -127,7 +127,7 @@
 
       var jar = request.jar();
       var cookie = request.cookie('freeab_participantHash=1234567890987654321');
-      jar.setCookieSync(cookie, 'http://localhost:8888');
+      jar.setCookie(cookie, 'http://localhost:8888');
 
       request.get(
         {
@@ -190,7 +190,7 @@
         function (err, res, body) {
           var jar = request.jar();
           var cookie = request.cookie('freeab_participantHash=1234567890987654321');
-          jar.setCookieSync(cookie, 'http://localhost:8888');
+          jar.setCookie(cookie, 'http://localhost:8888');
 
           request.get(
             {

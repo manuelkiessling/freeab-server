@@ -13,7 +13,7 @@
     "mysql": "^2.5.1",
     "node-dbi": "^0.7.1",
     "querystring": "^0.2.0",
-    "request": "^2.44.0",
+    "request": "2.45.0",
     "url": "^0.10.1",
     "percolator": "git://github.com/cainus/percolator.git#2305f0129c362e5bbdea7bc138d5640dab6377dd"
   },
